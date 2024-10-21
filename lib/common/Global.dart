@@ -15,17 +15,18 @@ class Global {
   static _menuInit() async {
     var databasePath = await getDatabasesPath();
     String dbPath = p.join(databasePath, 'menu.db');
+    await deleteDatabase(dbPath);
     menuDatabase = await openDatabase(
       dbPath,
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute('''CREATE TABLE menu(
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            level VARCHAR(10) NOT NULL,
-            isMain BOOLEAN,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            level TEXT NOT NULL,
+            isMain INTEGER,
+            created_at INTEGER,
+            updated_at INTEGER
             )''');
       },
     );
@@ -40,14 +41,14 @@ class Global {
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute('''CREATE TABLE vegetable(
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            alias VARCHAR(255),
-            shelfLife INT NOT NULL,
-            recommendStorageWay VARCHAR(20) NOT NULL,
-            remark VARCHAR(255),
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            id INTEGER  PRIMARY KEY,
+            name TEXT NOT NULL,
+            alias TEXT,
+            shelfLife INTEGER NOT NULL,
+            recommendStorageWay TEXT NOT NULL,
+            remark TEXT,
+            created_at INTEGER,
+            updated_at INTEGER
             )''');
       },
     );
@@ -62,12 +63,12 @@ class Global {
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute('''CREATE TABLE inventory(
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
-            vegetable_id BIGINT NOT NULL,
-            storageWay VARCHAR(20) NOT NULL,
-            storageTime TIMESTAMP NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            id INTEGER PRIMARY KEY,
+            vegetable_id INTEGER NOT NULL,
+            storageWay TEXT NOT NULL,
+            storageTime INTEGER NOT NULL,
+            created_at INTEGER,
+            updated_at INTEGER
             )''');
       },
     );
