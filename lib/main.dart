@@ -1,5 +1,6 @@
 import 'package:cook_random/common/Global.dart';
 import 'package:cook_random/common/MenuHelper.dart';
+import 'package:cook_random/model/Menu.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -118,10 +119,14 @@ class _MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               onPressed: () async {
                 var res = await MenuHelper.getList();
-                print(res);
+                print(res.runtimeType);
               },
               child: Text('data'),
-            )
+            ),
+            ElevatedButton(onPressed: () async {
+              var newId = await MenuHelper.insert(Menu(name: '番茄炒蛋', level: 1, isMain: true,
+                createdAt: DateTime.now().millisecondsSinceEpoch,updatedAt:DateTime.now().millisecondsSinceEpoch ));
+            }, child: Text('insert'),)
           ],
         ),
       ),
