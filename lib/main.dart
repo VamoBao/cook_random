@@ -1,9 +1,10 @@
 import 'package:cook_random/common/Global.dart';
+import 'package:cook_random/common/MenuHelper.dart';
 import 'package:flutter/material.dart';
 
-void main()  {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Global.init().then((e) =>runApp(const MyApp()));
+  Global.init().then((e) => runApp(const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -114,10 +115,13 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            ElevatedButton(onPressed: () async {
-              var res = await Global.getList();
-              print(res);
-            }, child: Text('data'),)
+            ElevatedButton(
+              onPressed: () async {
+                var res = await MenuHelper.getList();
+                print(res);
+              },
+              child: Text('data'),
+            )
           ],
         ),
       ),
