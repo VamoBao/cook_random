@@ -106,7 +106,17 @@ class _MenuDetailState extends State<MenuDetail> {
                       onPressed: () async {
                         if (Form.of(context).validate()) {
                           if (widget.menu != null) {
-                            // 编辑
+                            var newMenu = Menu(
+                              id: widget.menu?.id,
+                              name: _nameController.text,
+                              level: _level,
+                              isMain: _isMain,
+                              remark: _remarkController.text,
+                              createdAt: widget.menu?.createdAt ??
+                                  DateTime.now().millisecondsSinceEpoch,
+                              updatedAt: DateTime.now().millisecondsSinceEpoch,
+                            );
+                            await MenuHelper.update(newMenu);
                           } else {
                             var newMenu = Menu(
                               name: _nameController.text,
@@ -117,9 +127,9 @@ class _MenuDetailState extends State<MenuDetail> {
                               updatedAt: DateTime.now().millisecondsSinceEpoch,
                             );
                             await MenuHelper.insert(newMenu);
-                            if (context.mounted) {
-                              Navigator.pop(context, 'save');
-                            }
+                          }
+                          if (context.mounted) {
+                            Navigator.pop(context, 'save');
                           }
                         }
                       },
