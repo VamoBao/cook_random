@@ -15,16 +15,16 @@ class Global {
   static _menuInit() async {
     var databasePath = await getDatabasesPath();
     String dbPath = p.join(databasePath, 'menu.db');
-    await deleteDatabase(dbPath);
     menuDatabase = await openDatabase(
       dbPath,
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute('''CREATE TABLE menu(
             id INTEGER PRIMARY KEY,
-            name TEXT NOT NULL,
-            level TEXT NOT NULL,
+            name TEXT,
+            level INTEGER,
             isMain INTEGER,
+            remark TEXT,
             created_at INTEGER,
             updated_at INTEGER
             )''');
@@ -42,10 +42,10 @@ class Global {
       onCreate: (Database db, int version) async {
         await db.execute('''CREATE TABLE vegetable(
             id INTEGER  PRIMARY KEY,
-            name TEXT NOT NULL,
+            name TEXT,
             alias TEXT,
-            shelfLife INTEGER NOT NULL,
-            recommendStorageWay TEXT NOT NULL,
+            shelfLife INTEGER,
+            recommendStorageWay TEXT,
             remark TEXT,
             created_at INTEGER,
             updated_at INTEGER
@@ -64,9 +64,9 @@ class Global {
       onCreate: (Database db, int version) async {
         await db.execute('''CREATE TABLE inventory(
             id INTEGER PRIMARY KEY,
-            vegetable_id INTEGER NOT NULL,
-            storageWay TEXT NOT NULL,
-            storageTime INTEGER NOT NULL,
+            vegetable_id INTEGER,
+            storageWay TEXT,
+            storageTime INTEGER,
             created_at INTEGER,
             updated_at INTEGER
             )''');
