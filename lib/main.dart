@@ -1,5 +1,6 @@
 import 'package:cook_random/common/Global.dart';
-import 'package:cook_random/pgae/menu/menu_list.dart';
+import 'package:cook_random/pages/inventory/inventory_list.dart';
+import 'package:cook_random/pages/menu/menu_list.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -64,7 +65,7 @@ class _BasePageState extends State<BasePage> {
       body: [
         const MenuList(),
         const Placeholder(),
-        const Placeholder(),
+        const InventoryList(),
       ][_current],
     );
   }
