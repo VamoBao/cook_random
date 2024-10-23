@@ -1,6 +1,6 @@
 import 'package:cook_random/common/MenuHelper.dart';
 import 'package:cook_random/model/Menu.dart';
-import 'package:cook_random/pgae/menu/menu_detail.dart';
+import 'package:cook_random/pages/menu/menu_detail.dart';
 import 'package:flutter/material.dart';
 
 class MenuList extends StatefulWidget {
