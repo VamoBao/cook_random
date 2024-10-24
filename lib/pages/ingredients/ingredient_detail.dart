@@ -16,6 +16,9 @@ class _IngredientDetailState extends State<IngredientDetail> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _shelfLifeController = TextEditingController();
   final TextEditingController _remarkController = TextEditingController();
+  final TextEditingController _aliaController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  List<String> _alias = [];
   IngredientType _type = IngredientType.vegetable;
   StorageWay _way = StorageWay.refrigerate;
 
@@ -44,6 +47,7 @@ class _IngredientDetailState extends State<IngredientDetail> {
                 flex: 1,
                 child: SingleChildScrollView(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextFormField(
                         controller: _nameController,
@@ -117,6 +121,53 @@ class _IngredientDetailState extends State<IngredientDetail> {
                           hintText: '备注内容',
                         ),
                       ),
+                      const SizedBox(height: 8.0),
+                      const Text(
+                        '别名',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                        ),
+                      ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: _alias
+                              .map((alia) => Container(
+                                    margin: const EdgeInsets.only(right: 8.0),
+                                    child: InputChip(
+                                      label: Text(alia),
+                                      onDeleted: () {
+                                        setState(() {
+                                          _alias = _alias
+                                              .where((o) => o != alia)
+                                              .toList();
+                                        });
+                                      },
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      TextField(
+                        controller: _aliaController,
+                        focusNode: _focusNode,
+                        decoration: const InputDecoration(
+                          label: Text('添加别名'),
+                          hintText: '请输入别名',
+                        ),
+                        onSubmitted: (v) {
+                          if (v.trim().isNotEmpty) {
+                            if (!_alias.any((alia) => alia == v.trim())) {
+                              setState(() {
+                                _alias = [..._alias, v];
+                              });
+                            }
+                            _aliaController.text = '';
+                            _focusNode.requestFocus();
+                          }
+                        },
+                      )
                     ],
                   ),
                 ),
@@ -139,4 +190,8 @@ class _IngredientDetailState extends State<IngredientDetail> {
       ),
     );
   }
+}
+
+extension on int {
+  get dp => null;
 }
