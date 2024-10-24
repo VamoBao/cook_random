@@ -1,26 +1,34 @@
 enum IngredientType {
   ///蔬菜
-  vegetable,
+  vegetable('蔬菜'),
 
   ///调味品
-  condiment,
+  condiment('调味品'),
 
   ///肉类
-  meat,
+  meat('肉类'),
 
   ///水果
-  fruit,
+  fruit('水果');
+
+  final String label;
+
+  const IngredientType(this.label);
 }
 
 enum StorageWay {
   ///冷藏
-  refrigerate,
+  refrigerate('冷藏'),
 
   ///冷冻
-  freezing,
+  freezing('冷冻'),
 
   ///常温储存
-  normal,
+  normal('常温保存');
+
+  final String label;
+
+  const StorageWay(this.label);
 }
 
 class Ingredient {

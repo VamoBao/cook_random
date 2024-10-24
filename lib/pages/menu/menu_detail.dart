@@ -47,54 +47,57 @@ class _MenuDetailState extends State<MenuDetail> {
             children: [
               Expanded(
                 flex: 1,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        label: Text('菜单名称'),
-                        hintText: '请输入菜单的名称',
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          label: Text('菜单名称'),
+                          hintText: '请输入菜单的名称',
+                        ),
+                        validator: (v) => v!.trim().isEmpty ? '菜单名不能为空' : null,
                       ),
-                      validator: (v) => v!.trim().isEmpty ? '菜单名不能为空' : null,
-                    ),
-                    const SizedBox(height: 16.0),
-                    DropdownButtonFormField(
-                      value: _level,
-                      items: [0, 1, 2]
-                          .map((e) => DropdownMenuItem(
-                                value: e,
-                                child: Text(_levelList[e]),
-                              ))
-                          .toList(),
-                      onChanged: (v) {
-                        setState(() {
-                          _level = v ?? 0;
-                        });
-                      },
-                      decoration: const InputDecoration(label: Text('难度')),
-                    ),
-                    const SizedBox(height: 16.0),
-                    SwitchListTile(
-                      value: _isMain,
-                      title: const Text('是否主菜'),
-                      contentPadding: const EdgeInsets.only(left: 0, right: 0),
-                      onChanged: (v) {
-                        setState(() {
-                          _isMain = v;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    TextFormField(
-                      controller: _remarkController,
-                      minLines: 1,
-                      maxLines: 4,
-                      decoration: const InputDecoration(
-                        label: Text('备注说明'),
-                        hintText: '备注内容',
+                      const SizedBox(height: 16.0),
+                      DropdownButtonFormField(
+                        value: _level,
+                        items: [0, 1, 2]
+                            .map((e) => DropdownMenuItem(
+                                  value: e,
+                                  child: Text(_levelList[e]),
+                                ))
+                            .toList(),
+                        onChanged: (v) {
+                          setState(() {
+                            _level = v ?? 0;
+                          });
+                        },
+                        decoration: const InputDecoration(label: Text('难度')),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16.0),
+                      SwitchListTile(
+                        value: _isMain,
+                        title: const Text('是否主菜'),
+                        contentPadding:
+                            const EdgeInsets.only(left: 0, right: 0),
+                        onChanged: (v) {
+                          setState(() {
+                            _isMain = v;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: _remarkController,
+                        minLines: 1,
+                        maxLines: 4,
+                        decoration: const InputDecoration(
+                          label: Text('备注说明'),
+                          hintText: '备注内容',
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Container(

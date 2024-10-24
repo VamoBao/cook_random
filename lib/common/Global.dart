@@ -35,8 +35,8 @@ class Global {
   ///初始化食材数据库
   static _ingredientsInit() async {
     var databasePath = await getDatabasesPath();
-    String dbvPath = p.join(databasePath, 'vegetable.db');
-    await deleteDatabase(dbvPath);
+    // String dbvPath = p.join(databasePath, 'vegetable.db');
+    // await deleteDatabase(dbvPath);
     String dbPath = p.join(databasePath, 'ingredients.db');
     ingredientsDatabase = await openDatabase(
       dbPath,
@@ -61,7 +61,6 @@ class Global {
   static _inventoryInit() async {
     var databasePath = await getDatabasesPath();
     String dbPath = p.join(databasePath, 'inventory.db');
-    await deleteDatabase(dbPath);
     inventoryDatabase = await openDatabase(
       dbPath,
       version: 1,
