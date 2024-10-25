@@ -1,3 +1,4 @@
+import 'package:cook_random/common/IngredientHelper.dart';
 import 'package:cook_random/model/Ingredient.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +27,11 @@ class _IngredientDetailState extends State<IngredientDetail> {
   void initState() {
     if (widget.ingredient != null) {
       _nameController.text = widget.ingredient!.name;
+      _remarkController.text = widget.ingredient?.remark ?? '';
+      _alias = widget.ingredient?.alias ?? [];
+      _type = widget.ingredient!.type;
+      _way = widget.ingredient!.recommendStorageWay;
+      _shelfLifeController.text = widget.ingredient!.shelfLife.toString();
     }
     super.initState();
   }
@@ -56,6 +62,53 @@ class _IngredientDetailState extends State<IngredientDetail> {
                           hintText: '请输入食材名称',
                         ),
                         validator: (v) => v!.trim().isEmpty ? '食材名称不能为空' : null,
+                      ),
+                      const SizedBox(height: 8.0),
+                      const Text(
+                        '别名',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                        ),
+                      ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: _alias
+                              .map((alia) => Container(
+                                    margin: const EdgeInsets.only(right: 8.0),
+                                    child: InputChip(
+                                      label: Text(alia),
+                                      onDeleted: () {
+                                        setState(() {
+                                          _alias = _alias
+                                              .where((o) => o != alia)
+                                              .toList();
+                                        });
+                                      },
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      TextField(
+                        controller: _aliaController,
+                        focusNode: _focusNode,
+                        decoration: const InputDecoration(
+                          label: Text('添加别名'),
+                          hintText: '请输入别名',
+                        ),
+                        onSubmitted: (v) {
+                          if (v.trim().isNotEmpty) {
+                            if (!_alias.any((alia) => alia == v.trim())) {
+                              setState(() {
+                                _alias = [..._alias, v];
+                              });
+                            }
+                            _aliaController.text = '';
+                            _focusNode.requestFocus();
+                          }
+                        },
                       ),
                       const SizedBox(height: 16.0),
                       DropdownButtonFormField(
@@ -121,53 +174,6 @@ class _IngredientDetailState extends State<IngredientDetail> {
                           hintText: '备注内容',
                         ),
                       ),
-                      const SizedBox(height: 8.0),
-                      const Text(
-                        '别名',
-                        style: TextStyle(
-                          fontSize: 18.0,
-                        ),
-                      ),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: _alias
-                              .map((alia) => Container(
-                                    margin: const EdgeInsets.only(right: 8.0),
-                                    child: InputChip(
-                                      label: Text(alia),
-                                      onDeleted: () {
-                                        setState(() {
-                                          _alias = _alias
-                                              .where((o) => o != alia)
-                                              .toList();
-                                        });
-                                      },
-                                    ),
-                                  ))
-                              .toList(),
-                        ),
-                      ),
-                      const SizedBox(height: 4.0),
-                      TextField(
-                        controller: _aliaController,
-                        focusNode: _focusNode,
-                        decoration: const InputDecoration(
-                          label: Text('添加别名'),
-                          hintText: '请输入别名',
-                        ),
-                        onSubmitted: (v) {
-                          if (v.trim().isNotEmpty) {
-                            if (!_alias.any((alia) => alia == v.trim())) {
-                              setState(() {
-                                _alias = [..._alias, v];
-                              });
-                            }
-                            _aliaController.text = '';
-                            _focusNode.requestFocus();
-                          }
-                        },
-                      )
                     ],
                   ),
                 ),
@@ -178,7 +184,42 @@ class _IngredientDetailState extends State<IngredientDetail> {
                 child: Builder(
                   builder: (context) {
                     return FilledButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        if (Form.of(context).validate()) {
+                          if (widget.ingredient != null) {
+                            var newIngredient = Ingredient(
+                              id: widget.ingredient?.id,
+                              name: _nameController.text,
+                              type: _type,
+                              shelfLife:
+                                  int.tryParse(_shelfLifeController.text) ?? 0,
+                              recommendStorageWay: _way,
+                              alias: _alias,
+                              remark: _remarkController.text,
+                              createdAt: widget.ingredient?.createdAt ??
+                                  DateTime.now().millisecondsSinceEpoch,
+                              updatedAt: DateTime.now().millisecondsSinceEpoch,
+                            );
+                            await IngredientHelper.update(newIngredient);
+                          } else {
+                            var newIngredient = Ingredient(
+                              name: _nameController.text,
+                              type: _type,
+                              shelfLife:
+                                  int.tryParse(_shelfLifeController.text) ?? 0,
+                              recommendStorageWay: _way,
+                              alias: _alias,
+                              remark: _remarkController.text,
+                              createdAt: DateTime.now().millisecondsSinceEpoch,
+                              updatedAt: DateTime.now().millisecondsSinceEpoch,
+                            );
+                            await IngredientHelper.insert(newIngredient);
+                          }
+                          if (context.mounted) {
+                            Navigator.pop(context, 'save');
+                          }
+                        }
+                      },
                       child: const Text('保存'),
                     );
                   },
