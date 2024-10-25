@@ -38,6 +38,7 @@ class Global {
     // String dbvPath = p.join(databasePath, 'vegetable.db');
     // await deleteDatabase(dbvPath);
     String dbPath = p.join(databasePath, 'ingredients.db');
+    // await deleteDatabase(dbPath);
     ingredientsDatabase = await openDatabase(
       dbPath,
       version: 1,

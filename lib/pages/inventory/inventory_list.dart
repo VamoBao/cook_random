@@ -1,4 +1,5 @@
 import 'package:cook_random/pages/ingredients/ingredients_list.dart';
+import 'package:cook_random/pages/inventory/inventory_detail.dart';
 import 'package:flutter/material.dart';
 
 class InventoryList extends StatefulWidget {
@@ -23,9 +24,19 @@ class _InventoryListState extends State<InventoryList> {
                     builder: (context) => const IngredientsList()),
               );
             },
-            icon: Icon(Icons.list_alt),
+            icon: const Icon(Icons.list_alt),
           )
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const InventoryDetail()),
+          );
+        },
+        icon: const Icon(Icons.add),
+        label: const Text('入库'),
       ),
     );
   }

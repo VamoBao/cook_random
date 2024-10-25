@@ -36,7 +36,6 @@ class _MenuListState extends State<MenuList> {
         itemCount: _data.length,
         itemBuilder: (BuildContext context, int index) {
           var currentItem = _data[index];
-          print(currentItem.remark);
           return ListTile(
             title: Text(currentItem.name),
             subtitle: currentItem.remark == ''
