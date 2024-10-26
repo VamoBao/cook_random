@@ -7,9 +7,13 @@ class Inventory {
   late int storageTime;
   late int createdAt;
   late int updatedAt;
+  String? ingredientName;
+  int? shelfLife;
 
   Inventory({
     this.id,
+    this.ingredientName,
+    this.shelfLife,
     required this.ingredientsId,
     required this.storageWay,
     required this.storageTime,
@@ -36,6 +40,8 @@ class Inventory {
       storageTime: map['storageTime'],
       createdAt: map['created_at'],
       updatedAt: map['updated_at'],
+      ingredientName: map['ingredientName'],
+      shelfLife: map['shelfLife'],
     );
   }
 }

@@ -2,21 +2,13 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class Global {
-  ///菜单数据库实例
-  static Database? menuDatabase;
+  static Database? db;
 
-  ///库存数据库实例
-  static Database? inventoryDatabase;
-
-  ///食材数据库实例
-  static Database? ingredientsDatabase;
-
-  ///初始化菜单数据库
-  static _menuInit() async {
-    var databasePath = await getDatabasesPath();
-    String dbPath = p.join(databasePath, 'menu.db');
-    menuDatabase = await openDatabase(
-      dbPath,
+  static _init() async {
+    String databasePath = await getDatabasesPath();
+    String path = p.join(databasePath, 'cook.db');
+    db = await openDatabase(
+      path,
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute('''CREATE TABLE menu(
@@ -28,21 +20,6 @@ class Global {
             created_at INTEGER,
             updated_at INTEGER
             )''');
-      },
-    );
-  }
-
-  ///初始化食材数据库
-  static _ingredientsInit() async {
-    var databasePath = await getDatabasesPath();
-    // String dbvPath = p.join(databasePath, 'vegetable.db');
-    // await deleteDatabase(dbvPath);
-    String dbPath = p.join(databasePath, 'ingredients.db');
-    // await deleteDatabase(dbPath);
-    ingredientsDatabase = await openDatabase(
-      dbPath,
-      version: 1,
-      onCreate: (Database db, int version) async {
         await db.execute('''CREATE TABLE ingredients(
             id INTEGER  PRIMARY KEY,
             name TEXT,
@@ -54,18 +31,6 @@ class Global {
             created_at INTEGER,
             updated_at INTEGER
             )''');
-      },
-    );
-  }
-
-  ///初始化库存数据库
-  static _inventoryInit() async {
-    var databasePath = await getDatabasesPath();
-    String dbPath = p.join(databasePath, 'inventory.db');
-    inventoryDatabase = await openDatabase(
-      dbPath,
-      version: 1,
-      onCreate: (Database db, int version) async {
         await db.execute('''CREATE TABLE inventory(
             id INTEGER PRIMARY KEY,
             ingredients_id INTEGER,
@@ -78,7 +43,29 @@ class Global {
     );
   }
 
+  ///初始化菜单数据库
+  static _menuInit() async {
+    var databasePath = await getDatabasesPath();
+    String dbPath = p.join(databasePath, 'menu.db');
+    await deleteDatabase(dbPath);
+  }
+
+  ///初始化食材数据库
+  static _ingredientsInit() async {
+    var databasePath = await getDatabasesPath();
+    String dbPath = p.join(databasePath, 'ingredients.db');
+    await deleteDatabase(dbPath);
+  }
+
+  ///初始化库存数据库
+  static _inventoryInit() async {
+    var databasePath = await getDatabasesPath();
+    String dbPath = p.join(databasePath, 'inventory.db');
+    await deleteDatabase(dbPath);
+  }
+
   static init() async {
+    await _init();
     await _menuInit();
     await _ingredientsInit();
     await _inventoryInit();
