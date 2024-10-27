@@ -11,6 +11,16 @@ class MenuHelper {
     }).toList();
   }
 
+  static getFilterList(List<int> isMain, List<int> level) async {
+    String isMainSQL = isMain.join(',');
+    String levelSQL = level.join(',');
+    final res = await Global.db?.rawQuery('''SELECT * FROM menu
+    WHERE isMain IN ($isMainSQL) AND level IN ($levelSQL)''');
+    return res?.map((e) {
+      return Menu.fromMap(e);
+    }).toList();
+  }
+
   ///新增菜单
   static insert(Menu menu) async {
     return await Global.db?.insert('menu', menu.toMap());

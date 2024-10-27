@@ -66,8 +66,8 @@ class Global {
 
   static init() async {
     await _init();
-    await _menuInit();
-    await _ingredientsInit();
-    await _inventoryInit();
+    // await _menuInit();
+    // await _ingredientsInit();
+    // await _inventoryInit();
   }
 }
