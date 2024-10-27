@@ -1,12 +1,20 @@
 import 'package:cook_random/common/Global.dart';
+import 'package:cook_random/model/IngredientsProvider.dart';
 import 'package:cook_random/pages/inventory/inventory_list.dart';
 import 'package:cook_random/pages/menu/menu_list.dart';
+import 'package:cook_random/pages/random/random.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Global.init().then((e) => runApp(const MyApp()));
+  Global.init().then((e) => runApp(MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => IngredientsProvider()),
+        ],
+        child: const MyApp(),
+      )));
 }
 
 class MyApp extends StatelessWidget {
@@ -74,7 +82,7 @@ class _BasePageState extends State<BasePage> {
       ),
       body: [
         const MenuList(),
-        const Placeholder(),
+        const Random(),
         const InventoryList(),
       ][_current],
     );
