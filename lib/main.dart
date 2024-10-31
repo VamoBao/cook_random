@@ -3,6 +3,7 @@ import 'package:cook_random/model/IngredientsProvider.dart';
 import 'package:cook_random/pages/inventory/inventory_list.dart';
 import 'package:cook_random/pages/menu/menu_list.dart';
 import 'package:cook_random/pages/random/random.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -23,24 +24,41 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-          inputDecorationTheme: const InputDecorationTheme(
-            border: OutlineInputBorder(),
-          )),
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('zh'),
-        Locale('en'),
-      ],
-      home: const BasePage(),
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightColor, ColorScheme? darkColor) {
+        return MaterialApp(
+          title: 'Cook random',
+          theme: ThemeData(
+              colorScheme: lightColor ??
+                  ColorScheme.fromSwatch(primarySwatch: Colors.blue),
+              useMaterial3: true,
+              inputDecorationTheme: const InputDecorationTheme(
+                border: OutlineInputBorder(),
+              )),
+          darkTheme: ThemeData(
+            colorScheme: darkColor ??
+                ColorScheme.fromSwatch(
+                  primarySwatch: Colors.blue,
+                  brightness: Brightness.dark,
+                ),
+            useMaterial3: true,
+            inputDecorationTheme: const InputDecorationTheme(
+              border: OutlineInputBorder(),
+            ),
+          ),
+          themeMode: ThemeMode.system,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('zh'),
+            Locale('en'),
+          ],
+          home: const BasePage(),
+        );
+      },
     );
   }
 }
