@@ -26,21 +26,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder: (ColorScheme? lightColor, ColorScheme? darkColor) {
+        ColorScheme lightScheme =
+            ColorScheme.fromSeed(seedColor: lightColor?.primary ?? Colors.blue)
+                .harmonized();
+        ColorScheme darkScheme = ColorScheme.fromSeed(
+          seedColor: darkColor?.primary ?? Colors.blue,
+          brightness: Brightness.dark,
+        ).harmonized();
         return MaterialApp(
           title: 'Cook random',
           theme: ThemeData(
-              colorScheme: lightColor ??
-                  ColorScheme.fromSwatch(primarySwatch: Colors.blue),
-              useMaterial3: true,
-              inputDecorationTheme: const InputDecorationTheme(
-                border: OutlineInputBorder(),
-              )),
+            colorScheme: lightScheme,
+            useMaterial3: true,
+            inputDecorationTheme: const InputDecorationTheme(
+              border: OutlineInputBorder(),
+            ),
+          ),
           darkTheme: ThemeData(
-            colorScheme: darkColor ??
-                ColorScheme.fromSwatch(
-                  primarySwatch: Colors.blue,
-                  brightness: Brightness.dark,
-                ),
+            colorScheme: darkScheme,
             useMaterial3: true,
             inputDecorationTheme: const InputDecorationTheme(
               border: OutlineInputBorder(),
