@@ -1,4 +1,5 @@
 import 'package:cook_random/common/MenuHelper.dart';
+import 'package:cook_random/components/image_picker.dart';
 import 'package:cook_random/model/Menu.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,7 @@ class _MenuDetailState extends State<MenuDetail> {
   final List<String> _levelList = ['简单', '普通', '耗时'];
   int _level = 0;
   bool _isMain = true;
+  String? _imagePath;
 
   @override
   void initState() {
@@ -27,6 +29,7 @@ class _MenuDetailState extends State<MenuDetail> {
       setState(() {
         _level = widget.menu!.level;
         _isMain = widget.menu!.isMain;
+        _imagePath = widget.menu?.thumbnail;
       });
     }
     super.initState();
@@ -42,7 +45,7 @@ class _MenuDetailState extends State<MenuDetail> {
         key: _form,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
           child: Column(
             children: [
               Expanded(
@@ -50,6 +53,15 @@ class _MenuDetailState extends State<MenuDetail> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      ImageTool(
+                        imagePath: _imagePath,
+                        onSave: (path) {
+                          setState(() {
+                            _imagePath = path;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 32.0),
                       TextFormField(
                         controller: _nameController,
                         decoration: const InputDecoration(
@@ -118,6 +130,7 @@ class _MenuDetailState extends State<MenuDetail> {
                               createdAt: widget.menu?.createdAt ??
                                   DateTime.now().millisecondsSinceEpoch,
                               updatedAt: DateTime.now().millisecondsSinceEpoch,
+                              thumbnail: _imagePath,
                             );
                             await MenuHelper.update(newMenu);
                           } else {
@@ -128,6 +141,7 @@ class _MenuDetailState extends State<MenuDetail> {
                               remark: _remarkController.text,
                               createdAt: DateTime.now().millisecondsSinceEpoch,
                               updatedAt: DateTime.now().millisecondsSinceEpoch,
+                              thumbnail: _imagePath,
                             );
                             await MenuHelper.insert(newMenu);
                           }
