@@ -6,6 +6,7 @@ class Menu {
   int? createdAt;
   int? updatedAt;
   String? remark;
+  String? thumbnail;
 
   Menu({
     required this.name,
@@ -15,6 +16,7 @@ class Menu {
     this.updatedAt,
     this.id,
     this.remark,
+    this.thumbnail,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +28,7 @@ class Menu {
       'created_at': createdAt,
       'updated_at': updatedAt,
       'remark': remark,
+      'thumbnail': thumbnail,
     };
   }
 
@@ -38,6 +41,7 @@ class Menu {
       createdAt: map['created_at'],
       updatedAt: map['updated_at'],
       remark: map['remark'],
+      thumbnail: map['thumbnail'],
     );
   }
 }
