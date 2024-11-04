@@ -55,6 +55,11 @@ class _MenuDetailState extends State<MenuDetail> {
                     children: [
                       ImageTool(
                         imagePath: _imagePath,
+                        onSave: (path) {
+                          setState(() {
+                            _imagePath = path;
+                          });
+                        },
                       ),
                       const SizedBox(height: 32.0),
                       TextFormField(
@@ -125,6 +130,7 @@ class _MenuDetailState extends State<MenuDetail> {
                               createdAt: widget.menu?.createdAt ??
                                   DateTime.now().millisecondsSinceEpoch,
                               updatedAt: DateTime.now().millisecondsSinceEpoch,
+                              thumbnail: _imagePath,
                             );
                             await MenuHelper.update(newMenu);
                           } else {
@@ -135,9 +141,9 @@ class _MenuDetailState extends State<MenuDetail> {
                               remark: _remarkController.text,
                               createdAt: DateTime.now().millisecondsSinceEpoch,
                               updatedAt: DateTime.now().millisecondsSinceEpoch,
+                              thumbnail: _imagePath,
                             );
-                            print(newMenu.toMap());
-                            // await MenuHelper.insert(newMenu);
+                            await MenuHelper.insert(newMenu);
                           }
                           if (context.mounted) {
                             Navigator.pop(context, 'save');
