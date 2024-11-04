@@ -12,8 +12,10 @@ class Global {
             isMain INTEGER,
             remark TEXT,
             created_at INTEGER,
-            updated_at INTEGER
-            thumbnail TEXT
+            updated_at INTEGER,
+            thumbnail TEXT,
+            inventories TEXT,
+            steps Text
             )''');
   }
 
