@@ -14,7 +14,7 @@ class Global {
             created_at INTEGER,
             updated_at INTEGER,
             thumbnail TEXT,
-            inventories TEXT,
+            ingredients TEXT,
             steps Text
             )''');
   }

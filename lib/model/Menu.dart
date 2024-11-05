@@ -1,20 +1,5 @@
 import 'dart:convert';
 
-class StepItem {
-  int step;
-  String content;
-
-  StepItem({required this.step, required this.content});
-
-  Map<String, dynamic> toMap() {
-    return {'step': step, 'content': content};
-  }
-
-  factory StepItem.fromMap(Map<String, dynamic> map) {
-    return StepItem(step: map['step'], content: map['content']);
-  }
-}
-
 class Menu {
   int? id;
   late String name;
@@ -24,8 +9,8 @@ class Menu {
   int? updatedAt;
   String? remark;
   String? thumbnail;
-  List<int>? inventories;
-  List<StepItem>? steps;
+  List<int>? ingredients;
+  List<String>? steps;
 
   Menu({
     required this.name,
@@ -37,7 +22,7 @@ class Menu {
     this.remark,
     this.thumbnail,
     this.steps,
-    this.inventories,
+    this.ingredients,
   });
 
   Map<String, dynamic> toMap() {
@@ -50,12 +35,16 @@ class Menu {
       'updated_at': updatedAt,
       'remark': remark,
       'thumbnail': thumbnail,
-      'inventories': inventories?.join(','),
-      'steps': jsonEncode(steps?.map((s) => s.toMap()).toList())
+      'ingredients': ingredients?.join(','),
+      'steps': jsonEncode(steps)
     };
   }
 
   factory Menu.fromMap(Map<String, dynamic> map) {
+    List<String> strings = map['ingredients']?.split(',') ?? [];
+    List<int> stringsToInt = strings.map((s) => int.parse(s)).toList();
+    List<String> stepsString =
+        List<String>.from(jsonDecode(map['steps'] ?? []));
     return Menu(
       id: map['id'],
       name: map['name'],
@@ -65,14 +54,8 @@ class Menu {
       updatedAt: map['updated_at'],
       remark: map['remark'],
       thumbnail: map['thumbnail'],
-      inventories:
-          map['inventories']?.split(',')?.map((i) => int.parse(i)).toList(),
-      steps: jsonDecode(map['steps'])
-          ?.map((j) => StepItem(
-                step: j['step'],
-                content: j['content'],
-              ))
-          .toList(),
+      ingredients: stringsToInt,
+      steps: stepsString,
     );
   }
 }
