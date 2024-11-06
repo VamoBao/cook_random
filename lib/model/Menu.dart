@@ -35,16 +35,13 @@ class Menu {
       'updated_at': updatedAt,
       'remark': remark,
       'thumbnail': thumbnail,
-      'ingredients': ingredients?.join(','),
-      'steps': jsonEncode(steps)
+      'ingredients': jsonEncode(ingredients),
+      'steps': jsonEncode(steps),
     };
   }
 
   factory Menu.fromMap(Map<String, dynamic> map) {
-    List<String> strings = map['ingredients']?.split(',') ?? [];
-    List<int> stringsToInt = strings.map((s) => int.parse(s)).toList();
-    List<String> stepsString =
-        List<String>.from(jsonDecode(map['steps'] ?? []));
+    print(jsonDecode(map['ingredients'] ?? '[]'));
     return Menu(
       id: map['id'],
       name: map['name'],
@@ -54,8 +51,8 @@ class Menu {
       updatedAt: map['updated_at'],
       remark: map['remark'],
       thumbnail: map['thumbnail'],
-      ingredients: stringsToInt,
-      steps: stepsString,
+      ingredients: List<int>.from(jsonDecode(map['ingredients'] ?? '[]')),
+      steps: List<String>.from(jsonDecode(map['steps'] ?? '[]')),
     );
   }
 }

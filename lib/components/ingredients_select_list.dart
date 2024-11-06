@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 class IngredientsSelectList extends StatelessWidget {
   const IngredientsSelectList({
     required this.selectedKeys,
-    required this.onSelect,
     required this.ingredients,
+    required this.onSelect,
     super.key,
   });
 
@@ -15,26 +15,28 @@ class IngredientsSelectList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      itemBuilder: (BuildContext context, int index) {
-        var currentItem = ingredients[index];
-        print(selectedKeys.contains(currentItem.id));
-        return ListTile(
-          title: Text(currentItem.name),
-          trailing: Checkbox(
-              value: selectedKeys.contains(currentItem.id),
-              onChanged: (select) {
-                onSelect(currentItem.id ?? 0, select!);
-              }),
-        );
-      },
-      separatorBuilder: (context, index) {
-        return const Divider(
-          height: 8.0,
-        );
-      },
-      itemCount: ingredients.length,
+    return Expanded(
+      child: ListView.separated(
+        itemBuilder: (BuildContext context, int index) {
+          var currentItem = ingredients[index];
+          return ListTile(
+            title: Text(currentItem.name),
+            trailing: Checkbox(
+                value: selectedKeys.contains(currentItem.id),
+                onChanged: (select) {
+                  if (select != null) {
+                    onSelect(currentItem.id ?? 0, select);
+                  }
+                }),
+          );
+        },
+        separatorBuilder: (context, index) {
+          return const Divider(
+            height: 8.0,
+          );
+        },
+        itemCount: ingredients.length,
+      ),
     );
-    ;
   }
 }
