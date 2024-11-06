@@ -109,17 +109,18 @@ class _MenuListState extends State<MenuList> {
                 ];
               },
             );
-            return InkWell(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return MenuPreview(menu: currentItem);
-                }));
-              },
-              child: Card.filled(
-                color: theme.surfaceContainer,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+            return Card.filled(
+              color: theme.surfaceContainer,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return MenuPreview(menu: currentItem);
+                  }));
+                },
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: MenuListItem(menu: currentItem, trailing: trailing),

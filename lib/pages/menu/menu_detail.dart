@@ -1,6 +1,7 @@
 import 'package:cook_random/common/IngredientHelper.dart';
 import 'package:cook_random/common/MenuHelper.dart';
 import 'package:cook_random/components/image_picker.dart';
+import 'package:cook_random/components/ingredients_select_list.dart';
 import 'package:cook_random/model/Ingredient.dart';
 import 'package:cook_random/model/Menu.dart';
 import 'package:flutter/material.dart';
@@ -166,7 +167,30 @@ class _MenuDetailState extends State<MenuDetail> {
                       Wrap(
                         children: [
                           FilledButton.tonal(
-                            onPressed: () {},
+                            onPressed: () {
+                              showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) {
+                                    return Container(
+                                      width: double.infinity,
+                                      child: IngredientsSelectList(
+                                        selectedKeys: _detailIngredients,
+                                        ingredients: _ingredients,
+                                        onSelect: (id, select) {
+                                          if (select) {
+                                            setState(() {
+                                              _detailIngredients.add(id);
+                                            });
+                                          } else {
+                                            setState(() {
+                                              _detailIngredients.remove(id);
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    );
+                                  });
+                            },
                             child: const Text('添加食材'),
                           )
                         ],
