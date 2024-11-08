@@ -54,6 +54,7 @@ class _MenuDetailState extends State<MenuDetail> {
 
   @override
   void initState() {
+    print(widget.menu?.toMap());
     // 进来获取一下食材
     _loadIngredients();
     // 如果menu不为空,表示是编辑状态
@@ -164,36 +165,66 @@ class _MenuDetailState extends State<MenuDetail> {
                           ),
                         ),
                       ),
-                      Wrap(
-                        children: [
-                          FilledButton.tonal(
-                            onPressed: () {
-                              showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) {
-                                    return Container(
-                                      width: double.infinity,
-                                      child: IngredientsSelectList(
-                                        selectedKeys: _detailIngredients,
-                                        ingredients: _ingredients,
-                                        onSelect: (id, select) {
-                                          if (select) {
-                                            setState(() {
-                                              _detailIngredients.add(id);
-                                            });
-                                          } else {
-                                            setState(() {
-                                              _detailIngredients.remove(id);
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    );
+                      SizedBox(
+                        width: double.infinity,
+                        child: Wrap(
+                          alignment: WrapAlignment.start,
+                          crossAxisAlignment: WrapCrossAlignment.start,
+                          spacing: 8,
+                          children: [
+                            ..._detailIngredients.map((id) {
+                              final current =
+                                  _ingredients.firstWhere((ingredient) {
+                                return ingredient.id == id;
+                              });
+                              return InputChip(
+                                label: Text(current.name ?? ''),
+                                onDeleted: () {
+                                  setState(() {
+                                    _detailIngredients.remove(id);
                                   });
-                            },
-                            child: const Text('添加食材'),
-                          )
-                        ],
+                                },
+                              );
+                            }),
+                            FilledButton.tonal(
+                              onPressed: () {
+                                showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) {
+                                      return StatefulBuilder(
+                                        builder: (context, setModalState) {
+                                          return Column(
+                                            children: [
+                                              const Text(
+                                                '选择食材',
+                                                style: TextStyle(
+                                                    fontSize: 20, height: 2),
+                                              ),
+                                              IngredientsSelectList(
+                                                selectedKeys:
+                                                    _detailIngredients,
+                                                ingredients: _ingredients,
+                                                onSelect: (id, select) {
+                                                  setState(() {
+                                                    select
+                                                        ? _detailIngredients
+                                                            .add(id)
+                                                        : _detailIngredients
+                                                            .remove(id);
+                                                  });
+                                                  setModalState(() {});
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    });
+                              },
+                              child: const Text('添加食材'),
+                            )
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 16.0),
                       const SizedBox(
@@ -301,6 +332,7 @@ class _MenuDetailState extends State<MenuDetail> {
                                   DateTime.now().millisecondsSinceEpoch,
                               updatedAt: DateTime.now().millisecondsSinceEpoch,
                               thumbnail: _imagePath,
+                              ingredients: _detailIngredients,
                               steps:
                                   _stepControllers.map((c) => c.text).toList(),
                             );
@@ -314,6 +346,7 @@ class _MenuDetailState extends State<MenuDetail> {
                               createdAt: DateTime.now().millisecondsSinceEpoch,
                               updatedAt: DateTime.now().millisecondsSinceEpoch,
                               thumbnail: _imagePath,
+                              ingredients: _detailIngredients,
                               steps:
                                   _stepControllers.map((c) => c.text).toList(),
                             );
