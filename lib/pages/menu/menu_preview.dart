@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:cook_random/common/IngredientHelper.dart';
 import 'package:cook_random/model/Ingredient.dart';
 import 'package:cook_random/model/Menu.dart';
@@ -35,47 +36,36 @@ class _MenuPreviewState extends State<MenuPreview> {
     final item = widget.menu;
     final theme = Theme.of(context).colorScheme;
     return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool isScroll) {
-          return [
-            SliverAppBar(
-              backgroundColor: theme.surface,
-              elevation: 0,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Hero(
-                  tag: item.name,
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                        bottom: Radius.circular(24)),
-                    child: Image.file(
-                      File(item.thumbnail ?? ''),
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-              expandedHeight: MediaQuery.of(context).size.width,
-              pinned: true,
-              floating: true,
-            )
-          ];
-        },
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+      appBar: AppBar(
+        title: Text(widget.menu.name),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Hero(
-                tag: item.id.toString(),
-                child: SizedBox(
-                  child: Text(
-                    item.name,
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: theme.primary,
-                    ),
+                tag: item.id ?? 0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.file(
+                    File(item.thumbnail ?? ''),
+                    width: double.infinity,
+                    height: 240,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                child: Text(
+                  item.name,
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: theme.primary,
                   ),
                 ),
               ),
@@ -95,73 +85,31 @@ class _MenuPreviewState extends State<MenuPreview> {
                         child: Container(
                           height: 6,
                           width: 50,
-                          color: theme.tertiaryContainer,
+                          color: theme.primaryContainer,
                         ),
                       ),
-                      Text(
-                        '食材',
-                        style: TextStyle(
-                          fontSize: 22,
-                          color: theme.onTertiaryContainer,
-                        ),
-                      ),
+                      const Text('食材', style: TextStyle(fontSize: 22)),
                     ],
                   ),
                 ),
               ),
               Visibility(
                 visible: item.ingredients!.isNotEmpty,
-                child: Card.filled(
-                  margin: const EdgeInsets.only(top: 8),
-                  color: theme.surfaceContainerLow,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: MediaQuery.removePadding(
-                      removeTop: true,
-                      context: context,
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          final currentIngredient = _ingredients.firstWhere(
-                            (o) => o.id == item.ingredients?[index],
-                          );
-                          return Flex(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            direction: Axis.horizontal,
-                            children: [
-                              Text(
-                                currentIngredient.name,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  height: 1.7,
-                                ),
-                              ),
-                              const Text(
-                                '食材充足',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
-                                  height: 1.7,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                        separatorBuilder: (context, index) {
-                          return Divider(
-                            color: theme.primary,
-                            height: 16,
-                          );
-                        },
-                        itemCount: item.ingredients?.length ?? 0,
-                      ),
-                    ),
-                  ),
-                ),
+                child: Builder(builder: (context) {
+                  List<Ingredient> ingredients = [];
+                  for (int id in item.ingredients ?? []) {
+                    Ingredient? res = _ingredients.firstWhereOrNull(
+                      (o) => o.id == id,
+                    );
+                    if (res != null) {
+                      ingredients.add(res);
+                    }
+                  }
+                  return IngredientsList(
+                    ingredients: ingredients,
+                    theme: theme,
+                  );
+                }),
               ),
               Visibility(
                 visible: item.steps!.isNotEmpty,
@@ -176,47 +124,16 @@ class _MenuPreviewState extends State<MenuPreview> {
                         child: Container(
                           height: 6,
                           width: 90,
-                          color: theme.tertiaryContainer,
+                          color: theme.primaryContainer,
                         ),
                       ),
-                      Text(
-                        '制作步骤',
-                        style: TextStyle(
-                          fontSize: 22,
-                          color: theme.onTertiaryContainer,
-                        ),
-                      ),
+                      const Text('制作步骤', style: TextStyle(fontSize: 22)),
                     ],
                   ),
                 ),
               ),
               Visibility(
-                  visible: true,
-                  child: ListView.separated(
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        final step = item.steps?[index] ?? '';
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '步骤${index + 1}',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                height: 1.43,
-                              ),
-                            ),
-                            Text(step,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  height: 1.5,
-                                )),
-                          ],
-                        );
-                      },
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 24),
-                      itemCount: item.steps?.length ?? 0)),
+                  visible: true, child: StepList(steps: item.steps ?? [])),
               Visibility(
                 visible: item.remark != '',
                 child: Container(
@@ -230,16 +147,10 @@ class _MenuPreviewState extends State<MenuPreview> {
                         child: Container(
                           height: 6,
                           width: 50,
-                          color: theme.tertiaryContainer,
+                          color: theme.primaryContainer,
                         ),
                       ),
-                      Text(
-                        '备注',
-                        style: TextStyle(
-                          fontSize: 22,
-                          color: theme.onTertiaryContainer,
-                        ),
-                      ),
+                      const Text('备注', style: TextStyle(fontSize: 22)),
                     ],
                   ),
                 ),
@@ -250,7 +161,7 @@ class _MenuPreviewState extends State<MenuPreview> {
                   width: double.infinity,
                   child: Card(
                     elevation: 0,
-                    color: theme.secondaryContainer,
+                    color: theme.surfaceContainerLow,
                     margin: const EdgeInsets.only(top: 8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -269,20 +180,108 @@ class _MenuPreviewState extends State<MenuPreview> {
                   ),
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.only(top: 16),
-                child: Center(
-                  child: FilledButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('返 回'),
-                  ),
-                ),
-              )
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class IngredientsList extends StatelessWidget {
+  const IngredientsList(
+      {required this.ingredients, required this.theme, super.key});
+
+  final List<Ingredient> ingredients;
+  final ColorScheme theme;
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> children = [];
+    for (int i = 0; i < ingredients.length; i++) {
+      children.add(Flex(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        direction: Axis.horizontal,
+        children: [
+          Text(
+            ingredients[i].name,
+            style: const TextStyle(
+              fontSize: 14,
+              height: 1.7,
+            ),
+          ),
+          const Text(
+            '食材充足',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 14,
+              height: 1.7,
+            ),
+          ),
+        ],
+      ));
+      if (i != ingredients.length - 1) {
+        children.add(Divider(
+          color: theme.primaryContainer,
+          height: 16,
+        ));
+      }
+    }
+
+    return Card(
+      margin: const EdgeInsets.only(top: 8),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      color: theme.surfaceContainerLow,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: children,
+        ),
+      ),
+    );
+  }
+}
+
+class StepList extends StatelessWidget {
+  const StepList({required this.steps, super.key});
+
+  final List<String> steps;
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> children = [];
+    for (int i = 0; i < steps.length; i++) {
+      children.add(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '步骤${i + 1}',
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.43,
+              ),
+            ),
+            Text(steps[i],
+                style: const TextStyle(
+                  fontSize: 16,
+                  height: 1.5,
+                )),
+          ],
+        ),
+      );
+      if (i != steps.length - 1) {
+        children.add(const SizedBox(height: 24));
+      }
+    }
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
       ),
     );
   }

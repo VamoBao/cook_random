@@ -36,7 +36,7 @@ class _MenuListState extends State<MenuList> {
         title: const Text('菜单'),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        padding: const EdgeInsets.all(8.0),
         child: ListView.separated(
           itemCount: _data.length,
           itemBuilder: (BuildContext context, int index) {
