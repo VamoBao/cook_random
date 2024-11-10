@@ -54,7 +54,6 @@ class _MenuDetailState extends State<MenuDetail> {
 
   @override
   void initState() {
-    print(widget.menu?.toMap());
     // 进来获取一下食材
     _loadIngredients();
     // 如果menu不为空,表示是编辑状态

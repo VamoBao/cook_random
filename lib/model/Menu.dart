@@ -41,7 +41,6 @@ class Menu {
   }
 
   factory Menu.fromMap(Map<String, dynamic> map) {
-    print(jsonDecode(map['ingredients'] ?? '[]'));
     return Menu(
       id: map['id'],
       name: map['name'],

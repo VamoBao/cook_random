@@ -80,17 +80,14 @@ class _IngredientDetailState extends State<IngredientDetail> {
                                 .entries
                                 .map((entry) => Container(
                                       margin: const EdgeInsets.only(right: 8.0),
-                                      child: Builder(builder: (context) {
-                                        print(_alias.length);
-                                        return InputChip(
-                                          label: Text(entry.value),
-                                          onDeleted: () {
-                                            setState(() {
-                                              _alias.removeAt(entry.key);
-                                            });
-                                          },
-                                        );
-                                      }),
+                                      child: InputChip(
+                                        label: Text(entry.value),
+                                        onDeleted: () {
+                                          setState(() {
+                                            _alias.removeAt(entry.key);
+                                          });
+                                        },
+                                      ),
                                     ))
                                 .toList(),
                           ),

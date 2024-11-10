@@ -50,12 +50,19 @@ class _MenuPreviewState extends State<MenuPreview> {
                 tag: item.id ?? 0,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image.file(
-                    File(item.thumbnail ?? ''),
-                    width: double.infinity,
-                    height: 240,
-                    fit: BoxFit.cover,
-                  ),
+                  child: item.thumbnail == null
+                      ? Image.asset(
+                          'assets/images/placeholder.jpg',
+                          width: double.infinity,
+                          height: 240,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          File(item.thumbnail ?? ''),
+                          width: double.infinity,
+                          height: 240,
+                          fit: BoxFit.cover,
+                        ),
                 ),
               ),
               const SizedBox(height: 16),

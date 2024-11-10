@@ -26,12 +26,19 @@ class _MenuListItemState extends State<MenuListItem> {
             tag: currentItem.id ?? 0,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(6.0),
-              child: Image.file(
-                File(currentItem.thumbnail ?? ''),
-                width: 112,
-                height: 112,
-                fit: BoxFit.fill,
-              ),
+              child: currentItem.thumbnail == null
+                  ? Image.asset(
+                      'assets/images/placeholder.jpg',
+                      width: 112,
+                      height: 112,
+                      fit: BoxFit.fill,
+                    )
+                  : Image.file(
+                      File(currentItem.thumbnail ?? ''),
+                      width: 112,
+                      height: 112,
+                      fit: BoxFit.fill,
+                    ),
             ),
           ),
           Flexible(
