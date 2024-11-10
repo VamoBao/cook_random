@@ -23,15 +23,22 @@ class _MenuListItemState extends State<MenuListItem> {
       child: Row(
         children: [
           Hero(
-            tag: currentItem.name,
+            tag: currentItem.id ?? 0,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(6.0),
-              child: Image.file(
-                File(currentItem.thumbnail ?? ''),
-                width: 112,
-                height: 112,
-                fit: BoxFit.fill,
-              ),
+              child: currentItem.thumbnail == null
+                  ? Image.asset(
+                      'assets/images/placeholder.jpg',
+                      width: 112,
+                      height: 112,
+                      fit: BoxFit.fill,
+                    )
+                  : Image.file(
+                      File(currentItem.thumbnail ?? ''),
+                      width: 112,
+                      height: 112,
+                      fit: BoxFit.fill,
+                    ),
             ),
           ),
           Flexible(
@@ -50,18 +57,15 @@ class _MenuListItemState extends State<MenuListItem> {
                       children: [
                         Flexible(
                           flex: 1,
-                          child: Hero(
-                            tag: currentItem.id.toString(),
-                            child: Text(
-                              currentItem.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                                color: theme.surfaceTint,
-                                height: 1.25,
-                              ),
+                          child: Text(
+                            currentItem.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                              color: theme.surfaceTint,
+                              height: 1.25,
                             ),
                           ),
                         ),
