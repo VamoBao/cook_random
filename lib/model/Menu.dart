@@ -1,5 +1,20 @@
 import 'dart:convert';
 
+class MenuMaterial {
+  late String name;
+  late String unit;
+
+  MenuMaterial({required this.name, this.unit = ""});
+
+  Map<String, String> toMap() {
+    return {"name": name, "unit": unit};
+  }
+
+  factory MenuMaterial.fromMap(Map<String, dynamic> map) {
+    return MenuMaterial(name: map['name'] ?? '', unit: map['unit'] ?? '');
+  }
+}
+
 class Menu {
   int? id;
   late String name;
@@ -11,6 +26,7 @@ class Menu {
   String? thumbnail;
   List<int>? ingredients;
   List<String>? steps;
+  List<MenuMaterial>? materials;
 
   Menu({
     required this.name,
@@ -23,6 +39,7 @@ class Menu {
     this.thumbnail,
     this.steps,
     this.ingredients,
+    this.materials,
   });
 
   Map<String, dynamic> toMap() {
