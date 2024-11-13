@@ -2,6 +2,7 @@ import 'package:cook_random/common/MenuHelper.dart';
 import 'package:cook_random/components/image_picker.dart';
 import 'package:cook_random/components/material_input.dart';
 import 'package:cook_random/model/Menu.dart';
+import 'package:cook_random/pages/menu/import_dialog.dart';
 import 'package:flutter/material.dart';
 
 class MenuDetail extends StatefulWidget {
@@ -67,6 +68,33 @@ class _MenuDetailState extends State<MenuDetail> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.menu == null ? '新增菜单' : '编辑菜单'),
+        actions: [
+          ImportDialog(
+            onImport: (values) {
+              if (values.materials != null && values.materials?.length != 0) {
+                setState(() {
+                  _materials = values.materials!;
+                });
+              }
+              if (values.steps != null && values.steps?.length != 0) {
+                setState(() {
+                  _stepControllers = List.generate(
+                    values.steps!.length,
+                    (index) => TextEditingController(
+                      text: values.steps![index],
+                    ),
+                  );
+                });
+              }
+              if (values.title != null) {
+                _nameController.text = values.title!;
+              }
+              if (values.remark != null) {
+                _remarkController.text = values.remark!;
+              }
+            },
+          )
+        ],
       ),
       body: Form(
         key: _form,
