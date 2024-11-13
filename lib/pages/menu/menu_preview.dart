@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cook_random/common/IngredientHelper.dart';
 import 'package:cook_random/model/Ingredient.dart';
 import 'package:cook_random/model/Menu.dart';
 import 'package:flutter/material.dart';
@@ -15,21 +14,6 @@ class MenuPreview extends StatefulWidget {
 }
 
 class _MenuPreviewState extends State<MenuPreview> {
-  late List<Ingredient> _ingredients = [];
-
-  _loadIngredients() async {
-    var res = await IngredientHelper.getList();
-    setState(() {
-      _ingredients = res;
-    });
-  }
-
-  @override
-  void initState() {
-    _loadIngredients();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final item = widget.menu;
@@ -39,12 +23,13 @@ class _MenuPreviewState extends State<MenuPreview> {
         title: Text(widget.menu.name),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 16),
               Hero(
                 tag: item.id ?? 0,
                 child: ClipRRect(
@@ -96,6 +81,16 @@ class _MenuPreviewState extends State<MenuPreview> {
                       ),
                       const Text('食材', style: TextStyle(fontSize: 22)),
                     ],
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: item.materials!.isNotEmpty,
+                child: Container(
+                  margin: EdgeInsets.only(top: 8),
+                  child: MaterialList(
+                    list: item.materials ?? [],
+                    theme: theme,
                   ),
                 ),
               ),
@@ -160,8 +155,8 @@ class _MenuPreviewState extends State<MenuPreview> {
                         item.remark ?? '',
                         style: TextStyle(
                           color: theme.secondary,
-                          fontSize: 14,
-                          height: 1.43,
+                          fontSize: 16,
+                          height: 1.5,
                         ),
                       ),
                     ),
@@ -270,6 +265,55 @@ class StepList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: children,
+      ),
+    );
+  }
+}
+
+class MaterialList extends StatelessWidget {
+  const MaterialList({required this.list, required this.theme, super.key});
+
+  final List<MenuMaterial> list;
+  final ColorScheme theme;
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> children = [];
+    TextStyle style = TextStyle(
+      color: theme.onSecondaryContainer,
+      fontSize: 14,
+    );
+    for (int i = 0; i < list.length; i++) {
+      children.add(SizedBox(
+        height: 24,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              list[i].name,
+              style: style,
+            ),
+            Text(
+              list[i].unit,
+              style: style,
+            ),
+          ],
+        ),
+      ));
+      if (i != list.length - 1) {
+        children.add(const Divider(height: 16));
+      }
+    }
+    return Card(
+      color: theme.surfaceContainerLow,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: children,
+        ),
       ),
     );
   }
