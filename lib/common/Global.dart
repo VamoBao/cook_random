@@ -8,14 +8,14 @@ class Global {
     await db.execute('''CREATE TABLE menu(
             id INTEGER PRIMARY KEY,
             name TEXT,
-            level INTEGER,
-            isMain INTEGER,
+            level INTEGER, 
             remark TEXT,
             created_at INTEGER,
             updated_at INTEGER,
-            thumbnail TEXT,
-            ingredients TEXT,
-            steps Text
+            thumbnail TEXT, 
+            steps TEXT,
+            materials TEXT,
+            type INTEGER
             )''');
   }
 

@@ -1,8 +1,6 @@
-import 'package:cook_random/common/IngredientHelper.dart';
 import 'package:cook_random/common/MenuHelper.dart';
 import 'package:cook_random/components/image_picker.dart';
-import 'package:cook_random/components/ingredients_select_list.dart';
-import 'package:cook_random/model/Ingredient.dart';
+import 'package:cook_random/components/material_input.dart';
 import 'package:cook_random/model/Menu.dart';
 import 'package:flutter/material.dart';
 
@@ -25,14 +23,11 @@ class _MenuDetailState extends State<MenuDetail> {
   /// 备注输入controller
   final TextEditingController _remarkController = TextEditingController();
 
-  /// 难度选择list
-  final List<String> _levelList = ['简单', '普通', '耗时'];
-
   /// 当前选择的难度
-  int _level = 0;
+  MenuLevel _level = MenuLevel.normal;
 
-  /// 是否主菜
-  bool _isMain = true;
+  /// 菜谱类型
+  MenuType _type = MenuType.main;
 
   /// 图片地址
   String? _imagePath;
@@ -40,31 +35,17 @@ class _MenuDetailState extends State<MenuDetail> {
   /// 步骤输入框controller集合
   List<TextEditingController> _stepControllers = [];
 
-  List<int> _detailIngredients = [];
-
-  /// 食材列表
-  late List<Ingredient> _ingredients = [];
-
-  _loadIngredients() async {
-    var res = await IngredientHelper.getList();
-    setState(() {
-      _ingredients = res;
-    });
-  }
+  List<MenuMaterial> _materials = [];
 
   @override
   void initState() {
-    // 进来获取一下食材
-    _loadIngredients();
     // 如果menu不为空,表示是编辑状态
     if (widget.menu != null) {
       _nameController.text = widget.menu!.name;
       _remarkController.text = widget.menu!.remark ?? '';
       setState(() {
         _level = widget.menu!.level;
-        _isMain = widget.menu!.isMain;
         _imagePath = widget.menu?.thumbnail;
-        _detailIngredients = widget.menu?.ingredients ?? [];
         // 初始化步骤controller
         if (widget.menu?.steps?.length != 0) {
           _stepControllers = List.generate(
@@ -74,6 +55,8 @@ class _MenuDetailState extends State<MenuDetail> {
             ),
           );
         }
+        _materials = widget.menu?.materials ?? [];
+        _type = widget.menu!.type;
       });
     }
     super.initState();
@@ -89,7 +72,7 @@ class _MenuDetailState extends State<MenuDetail> {
         key: _form,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
               Expanded(
@@ -117,31 +100,35 @@ class _MenuDetailState extends State<MenuDetail> {
                       ),
                       const SizedBox(height: 16.0),
                       DropdownButtonFormField(
-                        value: _level,
-                        items: [0, 1, 2]
+                        value: _type,
+                        items: MenuType.values
                             .map((e) => DropdownMenuItem(
                                   value: e,
-                                  child: Text(_levelList[e]),
+                                  child: Text(e.label),
                                 ))
                             .toList(),
                         onChanged: (v) {
                           setState(() {
-                            _level = v ?? 0;
+                            _type = v!;
+                          });
+                        },
+                        decoration: const InputDecoration(label: Text('类型')),
+                      ),
+                      const SizedBox(height: 16.0),
+                      DropdownButtonFormField(
+                        value: _level,
+                        items: MenuLevel.values
+                            .map((e) => DropdownMenuItem(
+                                  value: e,
+                                  child: Text(e.label),
+                                ))
+                            .toList(),
+                        onChanged: (v) {
+                          setState(() {
+                            _level = v!;
                           });
                         },
                         decoration: const InputDecoration(label: Text('难度')),
-                      ),
-                      const SizedBox(height: 16.0),
-                      SwitchListTile(
-                        value: _isMain,
-                        title: const Text('是否主菜'),
-                        contentPadding:
-                            const EdgeInsets.only(left: 0, right: 0),
-                        onChanged: (v) {
-                          setState(() {
-                            _isMain = v;
-                          });
-                        },
                       ),
                       const SizedBox(height: 16.0),
                       TextFormField(
@@ -157,72 +144,38 @@ class _MenuDetailState extends State<MenuDetail> {
                       const SizedBox(
                         width: double.infinity,
                         child: Text(
-                          '食材材料',
+                          '食材用料',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
+                      ..._materials.asMap().entries.map((entry) {
+                        return MaterialInput(
+                          material: entry.value,
+                          onSubmit: (v) {
+                            setState(() {
+                              _materials[entry.key] = v;
+                            });
+                          },
+                          onDelete: () {
+                            setState(() {
+                              _materials.removeAt(entry.key);
+                            });
+                          },
+                        );
+                      }),
+                      const SizedBox(height: 16.0),
                       SizedBox(
                         width: double.infinity,
-                        child: Wrap(
-                          alignment: WrapAlignment.start,
-                          crossAxisAlignment: WrapCrossAlignment.start,
-                          spacing: 8,
-                          children: [
-                            ..._detailIngredients.map((id) {
-                              final current =
-                                  _ingredients.firstWhere((ingredient) {
-                                return ingredient.id == id;
-                              });
-                              return InputChip(
-                                label: Text(current.name ?? ''),
-                                onDeleted: () {
-                                  setState(() {
-                                    _detailIngredients.remove(id);
-                                  });
-                                },
-                              );
-                            }),
-                            FilledButton.tonal(
-                              onPressed: () {
-                                showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) {
-                                      return StatefulBuilder(
-                                        builder: (context, setModalState) {
-                                          return Column(
-                                            children: [
-                                              const Text(
-                                                '选择食材',
-                                                style: TextStyle(
-                                                    fontSize: 20, height: 2),
-                                              ),
-                                              IngredientsSelectList(
-                                                selectedKeys:
-                                                    _detailIngredients,
-                                                ingredients: _ingredients,
-                                                onSelect: (id, select) {
-                                                  setState(() {
-                                                    select
-                                                        ? _detailIngredients
-                                                            .add(id)
-                                                        : _detailIngredients
-                                                            .remove(id);
-                                                  });
-                                                  setModalState(() {});
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    });
-                              },
-                              child: const Text('添加食材'),
-                            )
-                          ],
+                        child: OutlinedButton(
+                          onPressed: () {
+                            setState(() {
+                              _materials.add(MenuMaterial(name: ''));
+                            });
+                          },
+                          child: const Text('添加食材'),
                         ),
                       ),
                       const SizedBox(height: 16.0),
@@ -307,11 +260,13 @@ class _MenuDetailState extends State<MenuDetail> {
                           },
                           child: const Text('添加步骤'),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
               ),
+
+              /// 提交按钮
               Container(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 width: double.infinity,
@@ -325,13 +280,13 @@ class _MenuDetailState extends State<MenuDetail> {
                               id: widget.menu?.id,
                               name: _nameController.text,
                               level: _level,
-                              isMain: _isMain,
+                              type: _type,
                               remark: _remarkController.text,
                               createdAt: widget.menu?.createdAt ??
                                   DateTime.now().millisecondsSinceEpoch,
                               updatedAt: DateTime.now().millisecondsSinceEpoch,
                               thumbnail: _imagePath,
-                              ingredients: _detailIngredients,
+                              materials: _materials,
                               steps:
                                   _stepControllers.map((c) => c.text).toList(),
                             );
@@ -340,12 +295,12 @@ class _MenuDetailState extends State<MenuDetail> {
                             var newMenu = Menu(
                               name: _nameController.text,
                               level: _level,
-                              isMain: _isMain,
+                              type: _type,
                               remark: _remarkController.text,
                               createdAt: DateTime.now().millisecondsSinceEpoch,
                               updatedAt: DateTime.now().millisecondsSinceEpoch,
                               thumbnail: _imagePath,
-                              ingredients: _detailIngredients,
+                              materials: _materials,
                               steps:
                                   _stepControllers.map((c) => c.text).toList(),
                             );

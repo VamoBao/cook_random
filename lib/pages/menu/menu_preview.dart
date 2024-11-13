@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:collection/collection.dart';
 import 'package:cook_random/common/IngredientHelper.dart';
 import 'package:cook_random/model/Ingredient.dart';
 import 'package:cook_random/model/Menu.dart';
@@ -81,7 +80,7 @@ class _MenuPreviewState extends State<MenuPreview> {
                 color: theme.outline.withOpacity(0.15),
               ),
               Visibility(
-                visible: item.ingredients!.isNotEmpty,
+                visible: item.materials!.isNotEmpty,
                 child: SizedBox(
                   width: double.infinity,
                   child: Stack(
@@ -99,24 +98,6 @@ class _MenuPreviewState extends State<MenuPreview> {
                     ],
                   ),
                 ),
-              ),
-              Visibility(
-                visible: item.ingredients!.isNotEmpty,
-                child: Builder(builder: (context) {
-                  List<Ingredient> ingredients = [];
-                  for (int id in item.ingredients ?? []) {
-                    Ingredient? res = _ingredients.firstWhereOrNull(
-                      (o) => o.id == id,
-                    );
-                    if (res != null) {
-                      ingredients.add(res);
-                    }
-                  }
-                  return IngredientsList(
-                    ingredients: ingredients,
-                    theme: theme,
-                  );
-                }),
               ),
               Visibility(
                 visible: item.steps!.isNotEmpty,
