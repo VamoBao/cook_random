@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:cook_random/common/MenuHelper.dart';
-import 'package:cook_random/common/XCFParser.dart';
+// import 'package:cook_random/common/XCFParser.dart';
 import 'package:cook_random/model/Menu.dart';
 import 'package:cook_random/pages/random/random_result.dart';
-import 'package:dio/dio.dart';
+// import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class Random extends StatefulWidget {
@@ -19,10 +19,10 @@ class _RandomState extends State<Random> {
   final List<int> _selectedLevel = [0, 1];
   int _count = 1;
 
-  _loadXCF() async {
-    final res = await Dio().get('https://www.xiachufang.com/recipe/102203515');
-    print(XCFParser().parseResponse(res));
-  }
+  // _loadXCF() async {
+  //   final res = await Dio().get('https://www.xiachufang.com/recipe/102203515');
+  //   print(XCFParser().parseResponse(res));
+  // }
 
   @override
   void initState() {
@@ -32,7 +32,7 @@ class _RandomState extends State<Random> {
       MenuMaterial(name: 'zzz', unit: '23311')
     ];
     var str = jsonEncode(ms.map((m) => m.toMap()).toList());
-    print(jsonDecode(str)
+    print(List<Map<String, dynamic>>.from(jsonDecode(str))
         .map((o) => MenuMaterial.fromMap(o))
         .toList()
         .runtimeType);

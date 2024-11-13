@@ -28,8 +28,8 @@ class _ImageToolState extends State<ImageTool> {
   final ImagePicker picker = ImagePicker();
 
   /// 选择图片
-  _selectImage() async {
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+  _selectImage(ImageSource source) async {
+    final XFile? image = await picker.pickImage(source: source);
     if (image != null) {
       final cropImg = await ImageCropper().cropImage(
         sourcePath: image.path,
@@ -50,9 +50,83 @@ class _ImageToolState extends State<ImageTool> {
         final filename = basename(cropImg.path);
         final imagePath = '${appDir.path}/$filename';
         await File(imagePath).writeAsBytes(await cropImg.readAsBytes());
-        widget.onSave!(imagePath);
+        widget.onSave(imagePath);
       }
     }
+  }
+
+  _showSelectModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 32,
+            horizontal: 32,
+          ),
+          child: SizedBox(
+            width: double.infinity,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      _selectImage(ImageSource.camera);
+                      Navigator.of(context).pop();
+                    },
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.camera_alt,
+                          size: 32,
+                        ),
+                        Text(
+                          '相机',
+                          style: TextStyle(height: 2),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      _selectImage(ImageSource.gallery);
+                      Navigator.of(context).pop();
+                    },
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.photo,
+                          size: 32,
+                        ),
+                        Text(
+                          '相册',
+                          style: TextStyle(height: 2),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -63,7 +137,7 @@ class _ImageToolState extends State<ImageTool> {
       child: widget.imagePath == null
           ? IconButton.filledTonal(
               onPressed: () {
-                _selectImage();
+                _showSelectModal(context);
               },
               iconSize: widget.size! / 4,
               style: ButtonStyle(
@@ -77,7 +151,7 @@ class _ImageToolState extends State<ImageTool> {
             )
           : InkWell(
               onTap: () {
-                _selectImage();
+                _showSelectModal(context);
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(widget.borderRadius),
