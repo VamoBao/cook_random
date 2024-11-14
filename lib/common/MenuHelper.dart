@@ -11,11 +11,11 @@ class MenuHelper {
     }).toList();
   }
 
-  static getFilterList(List<int> isMain, List<int> level) async {
-    String isMainSQL = isMain.join(',');
-    String levelSQL = level.join(',');
+  static getFilterList(List<MenuType> type, List<MenuLevel> level) async {
+    String isMainSQL = type.map((t) => t.index).toList().join(',');
+    String levelSQL = level.map((l) => l.index).toList().join(',');
     final res = await Global.db?.rawQuery('''SELECT * FROM menu
-    WHERE isMain IN ($isMainSQL) AND level IN ($levelSQL)''');
+    WHERE type IN ($isMainSQL) AND level IN ($levelSQL)''');
     return res?.map((e) {
       return Menu.fromMap(e);
     }).toList();
