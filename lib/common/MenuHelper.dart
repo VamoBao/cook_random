@@ -11,6 +11,15 @@ class MenuHelper {
     }).toList();
   }
 
+  /// 搜索
+  static getSearchList(String keyword) async {
+    final res = await Global.db
+        ?.rawQuery('SELECT * FROM menu WHERE name LIKE "%$keyword%"');
+    return res?.map((e) {
+      return Menu.fromMap(e);
+    }).toList();
+  }
+
   static getFilterList(List<MenuType> type, List<MenuLevel> level) async {
     String isMainSQL = type.map((t) => t.index).toList().join(',');
     String levelSQL = level.map((l) => l.index).toList().join(',');
