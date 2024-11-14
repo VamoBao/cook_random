@@ -98,7 +98,6 @@ class _MenuDetailState extends State<MenuDetail> {
       ),
       body: Form(
         key: _form,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(

@@ -50,7 +50,6 @@ class _IngredientDetailState extends State<IngredientDetail> {
       ),
       body: Form(
         key: _form,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           child: Column(
