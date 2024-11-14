@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 enum IngredientType {
   ///蔬菜
   vegetable('蔬菜'),
@@ -59,7 +61,7 @@ class Ingredient {
       'id': id,
       'name': name,
       'shelfLife': shelfLife,
-      'alias': alias?.join(","),
+      'alias': jsonEncode(alias),
       'type': type.index,
       'recommendStorageWay': recommendStorageWay.index,
       'created_at': createdAt,
@@ -72,7 +74,7 @@ class Ingredient {
     return Ingredient(
       id: map['id'],
       name: map['name'],
-      alias: ((map['alias'] ?? '') as String).split(","),
+      alias: List<String>.from(jsonDecode(map['alias'])),
       shelfLife: map['shelfLife'],
       type: IngredientType.values[map['type']],
       recommendStorageWay: StorageWay.values[map['recommendStorageWay']],

@@ -37,6 +37,12 @@ class _IngredientDetailState extends State<IngredientDetail> {
   }
 
   @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -44,9 +50,8 @@ class _IngredientDetailState extends State<IngredientDetail> {
       ),
       body: Form(
         key: _form,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           child: Column(
             children: [
               Expanded(
@@ -70,24 +75,27 @@ class _IngredientDetailState extends State<IngredientDetail> {
                           fontSize: 18.0,
                         ),
                       ),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: _alias
-                              .map((alia) => Container(
-                                    margin: const EdgeInsets.only(right: 8.0),
-                                    child: InputChip(
-                                      label: Text(alia),
-                                      onDeleted: () {
-                                        setState(() {
-                                          _alias = _alias
-                                              .where((o) => o != alia)
-                                              .toList();
-                                        });
-                                      },
-                                    ),
-                                  ))
-                              .toList(),
+                      Visibility(
+                        visible: _alias.isNotEmpty,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: _alias
+                                .asMap()
+                                .entries
+                                .map((entry) => Container(
+                                      margin: const EdgeInsets.only(right: 8.0),
+                                      child: InputChip(
+                                        label: Text(entry.value),
+                                        onDeleted: () {
+                                          setState(() {
+                                            _alias.removeAt(entry.key);
+                                          });
+                                        },
+                                      ),
+                                    ))
+                                .toList(),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 4.0),
@@ -102,7 +110,7 @@ class _IngredientDetailState extends State<IngredientDetail> {
                           if (v.trim().isNotEmpty) {
                             if (!_alias.any((alia) => alia == v.trim())) {
                               setState(() {
-                                _alias = [..._alias, v];
+                                _alias.add(v);
                               });
                             }
                             _aliaController.text = '';

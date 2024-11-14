@@ -105,6 +105,7 @@ class _InventoryDetailState extends State<InventoryDetail> {
                         label: Text('食材'),
                         hintText: '点击选择食材',
                       ),
+                      validator: (v) => v!.trim().isEmpty ? '食材不能为空' : null,
                       onTap: () async {
                         var res = await showDialog<Ingredient>(
                           context: context,

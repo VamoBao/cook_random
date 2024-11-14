@@ -1,6 +1,8 @@
 import 'package:cook_random/common/MenuHelper.dart';
+import 'package:cook_random/components/menu_list_item.dart';
 import 'package:cook_random/model/Menu.dart';
 import 'package:cook_random/pages/menu/menu_detail.dart';
+import 'package:cook_random/pages/menu/menu_preview.dart';
 import 'package:flutter/material.dart';
 
 class MenuList extends StatefulWidget {
@@ -28,24 +30,19 @@ class _MenuListState extends State<MenuList> {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme theme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('菜单'),
       ),
-      body: ListView.separated(
-        itemCount: _data.length,
-        itemBuilder: (BuildContext context, int index) {
-          var currentItem = _data[index];
-          return ListTile(
-            title: Text(currentItem.name),
-            subtitle: currentItem.remark == ''
-                ? null
-                : Text(
-                    currentItem.remark ?? '',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-            trailing: PopupMenuButton(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: ListView.separated(
+          itemCount: _data.length,
+          itemBuilder: (BuildContext context, int index) {
+            var currentItem = _data[index];
+            Widget trailing = PopupMenuButton(
+              padding: const EdgeInsets.all(0),
               itemBuilder: (BuildContext context) {
                 return [
                   PopupMenuItem(
@@ -111,17 +108,32 @@ class _MenuListState extends State<MenuList> {
                   ),
                 ];
               },
-            ),
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) {
-          return const Padding(
-            padding: EdgeInsets.only(left: 16.0, right: 16.0),
-            child: Divider(
-              height: 4,
-            ),
-          );
-        },
+            );
+            return Card.filled(
+              color: theme.surfaceContainer,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return MenuPreview(menu: currentItem);
+                  }));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: MenuListItem(menu: currentItem, trailing: trailing),
+                ),
+              ),
+            );
+          },
+          separatorBuilder: (BuildContext context, int index) {
+            return const SizedBox(
+              height: 8,
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {

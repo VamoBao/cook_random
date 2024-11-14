@@ -1,4 +1,5 @@
 import 'package:cook_random/common/MenuHelper.dart';
+import 'package:cook_random/model/Menu.dart';
 import 'package:cook_random/pages/random/random_result.dart';
 import 'package:flutter/material.dart';
 
@@ -10,8 +11,8 @@ class Random extends StatefulWidget {
 }
 
 class _RandomState extends State<Random> {
-  final List<int> _selectedMain = [1];
-  final List<int> _selectedLevel = [0, 1];
+  final List<MenuType> _selectedMain = [MenuType.main];
+  final List<MenuLevel> _selectedLevel = [MenuLevel.normal, MenuLevel.easy];
   int _count = 1;
 
   @override
@@ -30,10 +31,11 @@ class _RandomState extends State<Random> {
             ),
             const SizedBox(height: 8),
             Wrap(
+              alignment: WrapAlignment.center,
               spacing: 16,
-              children: [0, 1]
+              children: MenuType.values
                   .map((o) => FilterChip(
-                        label: Text(o == 1 ? '主菜' : '其他'),
+                        label: Text(o.label),
                         selected: _selectedMain.contains(o),
                         onSelected: (isSelect) {
                           setState(() {
@@ -54,19 +56,18 @@ class _RandomState extends State<Random> {
             ),
             const SizedBox(height: 8),
             Wrap(
+              alignment: WrapAlignment.center,
               spacing: 16,
-              children: ['简单', '普通', '耗时']
-                  .asMap()
-                  .entries
-                  .map((entry) => FilterChip(
-                        label: Text(entry.value),
-                        selected: _selectedLevel.contains(entry.key),
+              children: MenuLevel.values
+                  .map((o) => FilterChip(
+                        label: Text(o.label),
+                        selected: _selectedLevel.contains(o),
                         onSelected: (isSelected) {
                           setState(() {
                             if (isSelected) {
-                              _selectedLevel.add(entry.key);
+                              _selectedLevel.add(o);
                             } else if (_selectedLevel.length != 1) {
-                              _selectedLevel.remove(entry.key);
+                              _selectedLevel.remove(o);
                             }
                           });
                         },
