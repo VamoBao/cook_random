@@ -25,6 +25,12 @@ class _MenuListState extends State<MenuList> {
     });
   }
 
+  _unFocusSearch() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).unfocus();
+    });
+  }
+
   @override
   void initState() {
     _loadList();
@@ -49,9 +55,7 @@ class _MenuListState extends State<MenuList> {
                 viewLeading: IconButton(
                   onPressed: () {
                     _controller.text = '';
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      FocusScope.of(context).unfocus();
-                    });
+                    _unFocusSearch();
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.arrow_back),
@@ -64,6 +68,11 @@ class _MenuListState extends State<MenuList> {
                   return res.map((m) {
                     return ListTile(
                       title: Text(m.name),
+                      subtitle: Text(m.remark ?? ''),
+                      trailing: Icon(
+                        Icons.chevron_right,
+                        color: theme.secondary,
+                      ),
                       leading: m.thumbnail == null
                           ? Image.asset(
                               'assets/images/placeholder.jpg',
@@ -108,6 +117,7 @@ class _MenuListState extends State<MenuList> {
                                 },
                               ),
                             ).then((v) {
+                              _unFocusSearch();
                               if (v == 'save') {
                                 _loadList();
                               }
@@ -169,7 +179,9 @@ class _MenuListState extends State<MenuList> {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
                           return MenuPreview(menu: currentItem);
-                        }));
+                        })).then((_) {
+                          _unFocusSearch();
+                        });
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -195,6 +207,7 @@ class _MenuListState extends State<MenuList> {
             context,
             MaterialPageRoute(builder: (context) => const MenuDetail()),
           ).then((v) {
+            _unFocusSearch();
             if (v == 'save') {
               _loadList();
             }
