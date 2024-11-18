@@ -13,7 +13,8 @@ class Random extends StatefulWidget {
 class _RandomState extends State<Random> {
   final List<MenuType> _selectedMain = [MenuType.main];
   final List<MenuLevel> _selectedLevel = [MenuLevel.normal, MenuLevel.easy];
-  int _count = 1;
+  final List<int> _counts = List.generate(MenuType.values.length,
+      (index) => MenuType.values[index] == MenuType.main ? 1 : 0);
 
   @override
   Widget build(BuildContext context) {
@@ -21,132 +22,119 @@ class _RandomState extends State<Random> {
       appBar: AppBar(
         title: const Text('随机'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              '类型',
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 16,
-              children: MenuType.values
-                  .map((o) => FilterChip(
-                        label: Text(o.label),
-                        selected: _selectedMain.contains(o),
-                        onSelected: (isSelect) {
-                          setState(() {
-                            if (isSelect) {
-                              _selectedMain.add(o);
-                            } else if (_selectedMain.length != 1) {
-                              _selectedMain.remove(o);
-                            }
-                          });
-                        },
-                      ))
-                  .toList(),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              '难度',
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 16,
-              children: MenuLevel.values
-                  .map((o) => FilterChip(
-                        label: Text(o.label),
-                        selected: _selectedLevel.contains(o),
-                        onSelected: (isSelected) {
-                          setState(() {
-                            if (isSelected) {
-                              _selectedLevel.add(o);
-                            } else if (_selectedLevel.length != 1) {
-                              _selectedLevel.remove(o);
-                            }
-                          });
-                        },
-                      ))
-                  .toList(),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              '数量',
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                OutlinedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (_count > 1) {
-                        setState(() {
-                          _count--;
-                        });
-                      }
-                    });
-                  },
-                  style: ButtonStyle(
-                    padding: WidgetStateProperty.all<EdgeInsets>(
-                      const EdgeInsets.all(0),
-                    ),
-                  ),
-                  child: const Icon(Icons.remove),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    _count.toString(),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                OutlinedButton(
-                  onPressed: () {
-                    setState(() {
-                      _count++;
-                    });
-                  },
-                  style: ButtonStyle(
-                    padding: WidgetStateProperty.all<EdgeInsets>(
-                      const EdgeInsets.all(0),
-                    ),
-                  ),
-                  child: const Icon(Icons.add),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            FilledButton(
-              onPressed: () async {
-                final res = await MenuHelper.getFilterList(
-                    _selectedMain, _selectedLevel);
-                if (context.mounted) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            RandomResult(allMenus: res ?? [], count: _count)),
-                  );
-                }
-              },
-              child: const Text(
-                '生成随机菜单',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                '菜谱类型及数量',
+                style: TextStyle(fontSize: 18),
               ),
-            )
-          ],
+              const SizedBox(height: 8),
+              ...MenuType.values.asMap().entries.map((e) {
+                return Card.outlined(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                            child: Text(
+                          e.value.label,
+                          style: const TextStyle(fontSize: 16),
+                        )),
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: _counts[e.key] > 0
+                                  ? () {
+                                      setState(() {
+                                        _counts[e.key] = _counts[e.key] - 1;
+                                      });
+                                    }
+                                  : null,
+                              child: const Icon(Icons.remove),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              child: Text(
+                                _counts[e.key].toString(),
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: _counts[e.key] > 0
+                                        ? FontWeight.bold
+                                        : null),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _counts[e.key] = _counts[e.key] + 1;
+                                });
+                              },
+                              child: const Icon(Icons.add),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              }),
+              const SizedBox(height: 16),
+              const Text(
+                '难度',
+                style: TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 16,
+                children: MenuLevel.values
+                    .map((o) => FilterChip(
+                          label: Text(o.label),
+                          selected: _selectedLevel.contains(o),
+                          onSelected: (isSelected) {
+                            setState(() {
+                              if (isSelected) {
+                                _selectedLevel.add(o);
+                              } else if (_selectedLevel.length != 1) {
+                                _selectedLevel.remove(o);
+                              }
+                            });
+                          },
+                        ))
+                    .toList(),
+              ),
+              const SizedBox(height: 32),
+              FilledButton(
+                onPressed: _counts.any((c) => c > 0)
+                    ? () async {
+                        final res =
+                            await MenuHelper.getFilterList(_selectedLevel);
+                        if (context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RandomResult(
+                                    allMenus: res ?? [], counts: _counts)),
+                          );
+                        }
+                      }
+                    : null,
+                child: const Text(
+                  '生成随机菜单',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
