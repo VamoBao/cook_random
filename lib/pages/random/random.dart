@@ -11,7 +11,6 @@ class Random extends StatefulWidget {
 }
 
 class _RandomState extends State<Random> {
-  final List<MenuType> _selectedMain = [MenuType.main];
   final List<MenuLevel> _selectedLevel = [MenuLevel.normal, MenuLevel.easy];
   final List<int> _counts = List.generate(MenuType.values.length,
       (index) => MenuType.values[index] == MenuType.main ? 1 : 0);
@@ -38,7 +37,7 @@ class _RandomState extends State<Random> {
                 ...MenuType.values.asMap().entries.map((e) {
                   return Card.outlined(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

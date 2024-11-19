@@ -193,7 +193,7 @@ class _MenuListState extends State<MenuList> {
                 },
                 separatorBuilder: (BuildContext context, int index) {
                   return const SizedBox(
-                    height: 8,
+                    height: 0,
                   );
                 },
               ),

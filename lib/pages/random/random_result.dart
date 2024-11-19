@@ -52,6 +52,7 @@ class _RandomResultState extends State<RandomResult> {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme theme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('生成结果'),
@@ -88,12 +89,17 @@ class _RandomResultState extends State<RandomResult> {
                               physics:
                                   const NeverScrollableScrollPhysics(), //禁止滚动
                               crossAxisCount: 3,
-                              crossAxisSpacing: 8,
-                              mainAxisSpacing: 8,
+                              crossAxisSpacing: 4,
+                              mainAxisSpacing: 4,
                               childAspectRatio: 0.73,
                               children: e.value.map((o) {
                                 return Card(
+                                  elevation: 0,
+                                  color: theme.surfaceContainer,
                                   clipBehavior: Clip.hardEdge,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                   child: InkWell(
                                     onTap: () {
                                       Navigator.push(context,
@@ -129,7 +135,7 @@ class _RandomResultState extends State<RandomResult> {
                                             o.name,
                                             maxLines: 1,
                                             style: const TextStyle(
-                                              fontSize: 16,
+                                              fontSize: 14,
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
