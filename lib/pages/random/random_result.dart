@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:cook_random/model/Menu.dart';
+import 'package:cook_random/pages/menu/menu_preview.dart';
 import 'package:flutter/material.dart';
 
 class RandomResult extends StatefulWidget {
@@ -14,11 +16,9 @@ class RandomResult extends StatefulWidget {
 }
 
 class _RandomResultState extends State<RandomResult> {
-  List<Menu> _result = [];
   late List<List<Menu>> _res;
 
   List<Menu> _randomMenus(int count, List<Menu> menus) {
-    print(menus);
     if (count >= menus.length) {
       return menus;
     } else {
@@ -59,7 +59,7 @@ class _RandomResultState extends State<RandomResult> {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: _res.every((r) => r.isEmpty)
-            ? const Text('无满足条件的菜单')
+            ? const Center(child: Text('无满足条件的菜单'))
             : SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(
@@ -70,19 +70,74 @@ class _RandomResultState extends State<RandomResult> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              MenuType.values[e.key].label,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                            Container(
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              child: Text(
+                                MenuType.values[e.key].label,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 16,
-                              runSpacing: 16,
+                            GridView.count(
+                              // GridView所在的Column在一个滚动组件里面,所以需要禁止GridView滚动
+                              shrinkWrap: true, //自适应高度
+                              physics:
+                                  const NeverScrollableScrollPhysics(), //禁止滚动
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                              childAspectRatio: 0.73,
                               children: e.value.map((o) {
-                                return InputChip(label: Text(o.name));
+                                return Card(
+                                  clipBehavior: Clip.hardEdge,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return MenuPreview(menu: o);
+                                      }));
+                                    },
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Hero(
+                                          tag: o.id ?? 0,
+                                          child: ClipRRect(
+                                            child: o.thumbnail == null
+                                                ? Image.asset(
+                                                    'assets/images/placeholder.jpg',
+                                                    width: double.infinity,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Image.file(
+                                                    File(o.thumbnail ?? ''),
+                                                    width: double.infinity,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8),
+                                          child: Text(
+                                            o.name,
+                                            maxLines: 1,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
                               }).toList(),
                             ),
                             const SizedBox(height: 16),
