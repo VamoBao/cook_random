@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cook_random/model/Menu.dart';
 import 'package:flutter/material.dart';
 
@@ -20,16 +22,19 @@ class MaterialInput extends StatefulWidget {
 class _MaterialInputState extends State<MaterialInput> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _unitController = TextEditingController();
-  final FocusNode _nameFocus = FocusNode();
-  final FocusNode _unitFocus = FocusNode();
+  Timer? _debounce;
 
-  void _submitMaterial(FocusNode focus) {
-    if (!focus.hasFocus) {
-      widget.onSubmit(MenuMaterial(
-        name: _nameController.text,
-        unit: _unitController.text,
-      ));
-    }
+  void _onTextChange(String v) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(
+      const Duration(milliseconds: 500),
+      () {
+        widget.onSubmit(MenuMaterial(
+          name: _nameController.text,
+          unit: _unitController.text,
+        ));
+      },
+    );
   }
 
   @override
@@ -38,15 +43,12 @@ class _MaterialInputState extends State<MaterialInput> {
       _nameController.text = widget.material!.name;
       _unitController.text = widget.material?.unit ?? '';
     }
-    _nameFocus.addListener(() => _submitMaterial(_nameFocus));
-    _unitFocus.addListener(() => _submitMaterial(_unitFocus));
     super.initState();
   }
 
   @override
   void dispose() {
-    _nameFocus.dispose();
-    _unitFocus.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -60,12 +62,12 @@ class _MaterialInputState extends State<MaterialInput> {
             flex: 2,
             child: TextFormField(
               controller: _nameController,
-              focusNode: _nameFocus,
               validator: (v) => v!.trim().isEmpty ? '食材名不能为空' : null,
               decoration: const InputDecoration(
                 label: Text('食材'),
                 hintText: '请输入名称',
               ),
+              onChanged: _onTextChange,
             ),
           ),
           const SizedBox(width: 16),
@@ -73,11 +75,11 @@ class _MaterialInputState extends State<MaterialInput> {
             flex: 1,
             child: TextFormField(
               controller: _unitController,
-              focusNode: _unitFocus,
               decoration: const InputDecoration(
                 label: Text('用量'),
                 hintText: '请输入用量',
               ),
+              onChanged: _onTextChange,
             ),
           ),
           const SizedBox(width: 8),

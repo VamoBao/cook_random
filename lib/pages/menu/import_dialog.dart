@@ -20,6 +20,9 @@ class ImportDialog extends StatefulWidget {
 
 class _ImportDialogState extends State<ImportDialog> {
   final TextEditingController _controller = TextEditingController();
+  final re = RegExp(r'(^https://www.xiachufang.com/recipe/[0-9]+/$)');
+  String? errorText;
+  final GlobalKey<FormState> _key = GlobalKey<FormState>();
 
   _parseXCFMenu() async {
     Response res = await Dio().get(_controller.text);
@@ -38,16 +41,24 @@ class _ImportDialogState extends State<ImportDialog> {
                 actions: [
                   TextButton(
                       onPressed: () {
-                        _parseXCFMenu();
-                        Navigator.of(context).pop();
+                        if (_key.currentState!.validate()) {
+                          _parseXCFMenu();
+                          Navigator.of(context).pop();
+                        }
                       },
                       child: const Text('导入'))
                 ],
-                content: TextField(
-                  controller: _controller,
-                  decoration: const InputDecoration(
-                    label: Text('下厨房分享链接'),
-                    hintText: '请粘贴链接',
+                content: Form(
+                  key: _key,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: TextFormField(
+                    controller: _controller,
+                    decoration: const InputDecoration(
+                      label: Text('下厨房分享链接'),
+                      hintText: '请粘贴链接',
+                    ),
+                    validator: (v) =>
+                        re.hasMatch(v!.trim()) ? null : '请输入正确的链接',
                   ),
                 ),
               );

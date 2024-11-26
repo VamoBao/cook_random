@@ -45,12 +45,13 @@ class _MenuListItemState extends State<MenuListItem> {
             flex: 1,
             child: Container(
               margin: const EdgeInsets.only(left: 16),
-              width: double.infinity,
+              // width: double.infinity,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // 标题部分
                   SizedBox(
-                    height: 20,
+                    height: 24,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -83,14 +84,50 @@ class _MenuListItemState extends State<MenuListItem> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    currentItem.remark ?? '',
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: theme.onSurface,
+                  Flexible(
+                    flex: 1,
+                    child: SizedBox(
+                      height: double.infinity,
+                      child: Text(
+                        currentItem.remark == ''
+                            ? currentItem.steps!.join(';')
+                            : (currentItem.remark ?? ''),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: theme.onSurface,
+                        ),
+                      ),
                     ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(99),
+                          color: currentItem.level.index > 1
+                              ? theme.errorContainer
+                              : theme.primaryContainer,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 8,
+                        ),
+                        margin: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          currentItem.level.label,
+                          style: TextStyle(
+                            fontSize: 12,
+                            height: 1.4,
+                            color: currentItem.level.index > 1
+                                ? theme.onErrorContainer
+                                : theme.onPrimaryContainer,
+                          ),
+                        ),
+                      )
+                    ],
                   )
                 ],
               ),

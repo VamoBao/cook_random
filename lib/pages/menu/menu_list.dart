@@ -167,6 +167,11 @@ class _MenuListState extends State<MenuList> {
                         ),
                       ];
                     },
+                    icon: Icon(
+                      Icons.more_vert,
+                      size: 20,
+                      color: theme.onSurface.withAlpha(50),
+                    ),
                   );
                   return Card.filled(
                     color: theme.surfaceContainer,
