@@ -3,48 +3,45 @@ import 'dart:io';
 import 'package:cook_random/model/Menu.dart';
 import 'package:flutter/material.dart';
 
-class MenuListItem extends StatelessWidget {
-  const MenuListItem({required this.menu, required this.trailing, super.key});
+class MenuListSimpleItem extends StatelessWidget {
+  const MenuListSimpleItem(
+      {required this.menu, required this.trailing, super.key});
 
   final Menu menu;
   final Widget trailing;
 
   @override
   Widget build(BuildContext context) {
-    final currentItem = menu;
     final theme = Theme.of(context).colorScheme;
     return SizedBox(
-      height: 112,
       child: Row(
         children: [
           Hero(
-            tag: currentItem.id ?? 0,
+            tag: menu.id ?? 0,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(6.0),
-              child: currentItem.thumbnail == null
+              child: menu.thumbnail == null
                   ? Image.asset(
                       'assets/images/placeholder.jpg',
                       width: 112,
-                      height: 112,
+                      height: 76,
                       fit: BoxFit.fill,
                     )
                   : Image.file(
-                      File(currentItem.thumbnail ?? ''),
+                      File(menu.thumbnail ?? ''),
                       width: 112,
-                      height: 112,
+                      height: 76,
                       fit: BoxFit.fill,
                     ),
             ),
           ),
           Flexible(
-            flex: 1,
             child: Container(
+              height: 76,
               margin: const EdgeInsets.only(left: 16),
-              // width: double.infinity,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // 标题部分
                   SizedBox(
                     height: 24,
                     child: Row(
@@ -54,7 +51,7 @@ class MenuListItem extends StatelessWidget {
                         Flexible(
                           flex: 1,
                           child: Text(
-                            currentItem.name,
+                            menu.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -69,40 +66,13 @@ class MenuListItem extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Container(
-                    height: 4,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: theme.primaryContainer,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Flexible(
-                    flex: 1,
-                    child: SizedBox(
-                      height: double.infinity,
-                      child: Text(
-                        currentItem.remark == ''
-                            ? currentItem.steps!.join(';')
-                            : (currentItem.remark ?? ''),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: theme.onSurface,
-                        ),
-                      ),
-                    ),
-                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(99),
-                          color: currentItem.level.index > 1
+                          color: menu.level.index > 1
                               ? theme.errorContainer
                               : theme.primaryContainer,
                         ),
@@ -112,11 +82,11 @@ class MenuListItem extends StatelessWidget {
                         ),
                         margin: const EdgeInsets.only(top: 8),
                         child: Text(
-                          currentItem.level.label,
+                          menu.level.label,
                           style: TextStyle(
                             fontSize: 12,
                             height: 1.4,
-                            color: currentItem.level.index > 1
+                            color: menu.level.index > 1
                                 ? theme.onErrorContainer
                                 : theme.onPrimaryContainer,
                           ),
