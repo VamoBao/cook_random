@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cook_random/common/MenuHelper.dart';
 import 'package:cook_random/components/menu_list_item.dart';
+import 'package:cook_random/components/menu_list_simple_item.dart';
 import 'package:cook_random/model/Menu.dart';
 import 'package:cook_random/pages/menu/menu_detail.dart';
 import 'package:cook_random/pages/menu/menu_preview.dart';
@@ -99,6 +100,8 @@ class _MenuListState extends State<MenuList> {
                 itemCount: _data.length,
                 itemBuilder: (BuildContext context, int index) {
                   var currentItem = _data[index];
+                  bool noRemark =
+                      currentItem.remark == '' || currentItem.remark == null;
                   Widget trailing = PopupMenuButton(
                     padding: const EdgeInsets.all(0),
                     itemBuilder: (BuildContext context) {
@@ -189,9 +192,14 @@ class _MenuListState extends State<MenuList> {
                         });
                       },
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child:
-                            MenuListItem(menu: currentItem, trailing: trailing),
+                        padding: const EdgeInsets.all(16),
+                        child: noRemark
+                            ? MenuListSimpleItem(
+                                menu: currentItem,
+                                trailing: trailing,
+                              )
+                            : MenuListItem(
+                                menu: currentItem, trailing: trailing),
                       ),
                     ),
                   );
