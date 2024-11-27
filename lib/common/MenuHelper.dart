@@ -11,6 +11,15 @@ class MenuHelper {
     }).toList();
   }
 
+  static Future<Menu?> getById(int id) async {
+    final List<Map<String, Object?>>? res =
+        await Global.db?.rawQuery('SELECT * FROM menu WHERE id=$id');
+    if (res?.length != 0) {
+      return Menu.fromMap(res![0]);
+    }
+    return null;
+  }
+
   /// 搜索
   static getSearchList(String keyword) async {
     final res = await Global.db

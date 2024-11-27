@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cook_random/components/menu_simple_info.dart';
 import 'package:cook_random/model/Menu.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +15,7 @@ class MenuListSimpleItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context).colorScheme;
     return SizedBox(
+      height: 60,
       child: Row(
         children: [
           Hero(
@@ -23,21 +25,21 @@ class MenuListSimpleItem extends StatelessWidget {
               child: menu.thumbnail == null
                   ? Image.asset(
                       'assets/images/placeholder.jpg',
-                      width: 112,
-                      height: 76,
-                      fit: BoxFit.fill,
+                      width: 110,
+                      height: 60,
+                      fit: BoxFit.fitWidth,
                     )
                   : Image.file(
                       File(menu.thumbnail ?? ''),
-                      width: 112,
-                      height: 76,
-                      fit: BoxFit.fill,
+                      width: 110,
+                      height: 60,
+                      fit: BoxFit.fitWidth,
                     ),
             ),
           ),
           Flexible(
             child: Container(
-              height: 76,
+              height: 60,
               margin: const EdgeInsets.only(left: 16),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,38 +68,11 @@ class MenuListSimpleItem extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(99),
-                          color: menu.level.index > 1
-                              ? theme.errorContainer
-                              : theme.primaryContainer,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 4,
-                          horizontal: 8,
-                        ),
-                        margin: const EdgeInsets.only(top: 8),
-                        child: Text(
-                          menu.level.label,
-                          style: TextStyle(
-                            fontSize: 12,
-                            height: 1.4,
-                            color: menu.level.index > 1
-                                ? theme.onErrorContainer
-                                : theme.onPrimaryContainer,
-                          ),
-                        ),
-                      )
-                    ],
-                  )
+                  MenuSimpleInfo(menu: menu)
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );

@@ -27,7 +27,7 @@ class _MaterialInputState extends State<MaterialInput> {
   void _onTextChange(String v) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(
-      const Duration(milliseconds: 500),
+      const Duration(milliseconds: 200),
       () {
         widget.onSubmit(MenuMaterial(
           name: _nameController.text,
