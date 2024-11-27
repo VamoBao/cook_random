@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cook_random/components/menu_simple_info.dart';
 import 'package:cook_random/model/Menu.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +15,7 @@ class MenuListItem extends StatelessWidget {
     final currentItem = menu;
     final theme = Theme.of(context).colorScheme;
     return SizedBox(
-      height: 112,
+      height: 110,
       child: Row(
         children: [
           Hero(
@@ -24,14 +25,14 @@ class MenuListItem extends StatelessWidget {
               child: currentItem.thumbnail == null
                   ? Image.asset(
                       'assets/images/placeholder.jpg',
-                      width: 112,
-                      height: 112,
+                      width: 110,
+                      height: 110,
                       fit: BoxFit.fill,
                     )
                   : Image.file(
                       File(currentItem.thumbnail ?? ''),
-                      width: 112,
-                      height: 112,
+                      width: 110,
+                      height: 110,
                       fit: BoxFit.fill,
                     ),
             ),
@@ -96,34 +97,7 @@ class MenuListItem extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(99),
-                          color: currentItem.level.index > 1
-                              ? theme.errorContainer
-                              : theme.primaryContainer,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 4,
-                          horizontal: 8,
-                        ),
-                        margin: const EdgeInsets.only(top: 8),
-                        child: Text(
-                          currentItem.level.label,
-                          style: TextStyle(
-                            fontSize: 12,
-                            height: 1.4,
-                            color: currentItem.level.index > 1
-                                ? theme.onErrorContainer
-                                : theme.onPrimaryContainer,
-                          ),
-                        ),
-                      )
-                    ],
-                  )
+                  MenuSimpleInfo(menu: currentItem)
                 ],
               ),
             ),

@@ -1,8 +1,12 @@
 import 'dart:io';
 
+import 'package:cook_random/common/MenuHelper.dart';
+import 'package:cook_random/common/Utils.dart';
 import 'package:cook_random/model/Ingredient.dart';
 import 'package:cook_random/model/Menu.dart';
+import 'package:cook_random/pages/menu/menu_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MenuPreview extends StatefulWidget {
   const MenuPreview({required this.menu, super.key});
@@ -14,156 +18,275 @@ class MenuPreview extends StatefulWidget {
 }
 
 class _MenuPreviewState extends State<MenuPreview> {
+  late Menu _item;
+  bool _shouldRefresh = false;
+
+  void _refreshItem(int id) async {
+    final newItem = await MenuHelper.getById(id);
+    if (newItem != null) {
+      setState(() {
+        _item = newItem;
+        _shouldRefresh = true;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    _item = widget.menu;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final item = widget.menu;
     final theme = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.menu.name),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
-              Hero(
-                tag: item.id ?? 0,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: item.thumbnail == null
-                      ? Image.asset(
-                          'assets/images/placeholder.jpg',
-                          width: double.infinity,
-                          height: 240,
-                          fit: BoxFit.cover,
-                        )
-                      : Image.file(
-                          File(item.thumbnail ?? ''),
-                          width: double.infinity,
-                          height: 240,
-                          fit: BoxFit.cover,
-                        ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                child: Text(
-                  item.name,
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: theme.primary,
-                  ),
-                ),
-              ),
-              Divider(
-                height: 16,
-                color: theme.outline.withOpacity(0.15),
-              ),
-              Visibility(
-                visible: item.materials!.isNotEmpty,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Stack(
-                    alignment: Alignment.center,
+    final isHard = Utils().isHardLevel(_item.level);
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          return;
+        } else {
+          Navigator.pop(context, _shouldRefresh);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(_item.name),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24)),
+                  clipBehavior: Clip.hardEdge,
+                  color: theme.primaryContainer.withAlpha(100),
+                  elevation: 0,
+                  child: Column(
                     children: [
-                      Positioned(
-                        bottom: 0,
-                        child: Container(
-                          height: 6,
-                          width: 50,
-                          color: theme.primaryContainer,
+                      Hero(
+                        tag: _item.id ?? 0,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: _item.thumbnail == null
+                              ? Image.asset(
+                                  'assets/images/placeholder.jpg',
+                                  width: double.infinity,
+                                  // height: 240,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.file(
+                                  File(_item.thumbnail ?? ''),
+                                  width: double.infinity,
+                                  // height: 240,
+                                  fit: BoxFit.cover,
+                                ),
                         ),
                       ),
-                      const Text('食材', style: TextStyle(fontSize: 22)),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _item.name,
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: theme.primary,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Utils().getTypeIcon(_item.type),
+                                      color: theme.primary.withAlpha(125),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Icon(
+                                      isHard
+                                          ? Icons.access_time_filled
+                                          : Icons.thumb_up_alt,
+                                      color: theme.primary.withAlpha(125),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    IconButton.filledTonal(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return MenuDetail(
+                                                menu: _item,
+                                              );
+                                            },
+                                          ),
+                                        ).then((v) {
+                                          if (v == 'save' && _item.id != null) {
+                                            final id = _item.id;
+                                            _refreshItem(id!);
+                                          }
+                                        });
+                                      },
+                                      icon: const Icon(
+                                        Icons.edit,
+                                        // size: 24,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    FilledButton.icon(
+                                      onPressed: () {
+                                        if (_item.materials!.isNotEmpty) {
+                                          final String text =
+                                              _item.materials!.map((material) {
+                                            return '${material.name}\t${material.unit}';
+                                          }).join('\n');
+                                          Clipboard.setData(
+                                            ClipboardData(text: text),
+                                          ).then((_) {
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text('已复制到剪贴板'),
+                                                ),
+                                              );
+                                            }
+                                          });
+                                        }
+                                      },
+                                      icon: const Icon(
+                                        Icons.shopping_cart,
+                                        size: 18,
+                                      ),
+                                      label: const Text('采购清单'),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),
-              ),
-              Visibility(
-                visible: item.materials!.isNotEmpty,
-                child: Container(
-                  margin: EdgeInsets.only(top: 8),
-                  child: MaterialList(
-                    list: item.materials ?? [],
-                    theme: theme,
-                  ),
-                ),
-              ),
-              Visibility(
-                visible: item.steps!.isNotEmpty,
-                child: Container(
-                  margin: const EdgeInsets.only(top: 16),
-                  width: double.infinity,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Positioned(
-                        bottom: 0,
-                        child: Container(
-                          height: 6,
-                          width: 90,
-                          color: theme.primaryContainer,
+                const SizedBox(height: 16),
+                Visibility(
+                  visible: _item.materials!.isNotEmpty,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Positioned(
+                          bottom: 0,
+                          child: Container(
+                            height: 6,
+                            width: 50,
+                            color: theme.primaryContainer,
+                          ),
                         ),
-                      ),
-                      const Text('制作步骤', style: TextStyle(fontSize: 22)),
-                    ],
+                        const Text('食材', style: TextStyle(fontSize: 22)),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Visibility(
-                  visible: true, child: StepList(steps: item.steps ?? [])),
-              Visibility(
-                visible: item.remark != '',
-                child: Container(
-                  margin: const EdgeInsets.only(top: 16),
-                  width: double.infinity,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Positioned(
-                        bottom: 0,
-                        child: Container(
-                          height: 6,
-                          width: 50,
-                          color: theme.primaryContainer,
-                        ),
-                      ),
-                      const Text('备注', style: TextStyle(fontSize: 22)),
-                    ],
-                  ),
-                ),
-              ),
-              Visibility(
-                visible: item.remark != '',
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Card(
-                    elevation: 0,
-                    color: theme.surfaceContainerLow,
+                Visibility(
+                  visible: _item.materials!.isNotEmpty,
+                  child: Container(
                     margin: const EdgeInsets.only(top: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                    child: MaterialList(
+                      list: _item.materials ?? [],
+                      theme: theme,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        item.remark ?? '',
-                        style: TextStyle(
-                          color: theme.secondary,
-                          fontSize: 16,
-                          height: 1.5,
+                  ),
+                ),
+                Visibility(
+                  visible: _item.steps!.isNotEmpty,
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 16),
+                    width: double.infinity,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Positioned(
+                          bottom: 0,
+                          child: Container(
+                            height: 6,
+                            width: 90,
+                            color: theme.primaryContainer,
+                          ),
+                        ),
+                        const Text('制作步骤', style: TextStyle(fontSize: 22)),
+                      ],
+                    ),
+                  ),
+                ),
+                Visibility(
+                    visible: true, child: StepList(steps: _item.steps ?? [])),
+                Visibility(
+                  visible: _item.remark != '',
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 16),
+                    width: double.infinity,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Positioned(
+                          bottom: 0,
+                          child: Container(
+                            height: 6,
+                            width: 50,
+                            color: theme.primaryContainer,
+                          ),
+                        ),
+                        const Text('备注', style: TextStyle(fontSize: 22)),
+                      ],
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: _item.remark != '',
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Card(
+                      elevation: 0,
+                      color: theme.surfaceContainerLow,
+                      margin: const EdgeInsets.only(top: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          _item.remark ?? '',
+                          style: TextStyle(
+                            color: theme.secondary,
+                            fontSize: 16,
+                            height: 1.5,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

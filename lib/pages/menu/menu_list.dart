@@ -69,7 +69,13 @@ class _MenuListState extends State<MenuList> {
                   return res.map((m) {
                     return ListTile(
                       title: Text(m.name),
-                      subtitle: Text(m.remark ?? ''),
+                      subtitle: (m.remark == '' || m.remark == null)
+                          ? null
+                          : Text(
+                              m.remark ?? '',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                       trailing: Icon(
                         Icons.chevron_right,
                         color: theme.secondary,
@@ -187,12 +193,15 @@ class _MenuListState extends State<MenuList> {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
                           return MenuPreview(menu: currentItem);
-                        })).then((_) {
+                        })).then((v) {
                           _unFocusSearch();
+                          if (v) {
+                            _loadList();
+                          }
                         });
                       },
                       child: Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(8),
                         child: noRemark
                             ? MenuListSimpleItem(
                                 menu: currentItem,
@@ -206,7 +215,7 @@ class _MenuListState extends State<MenuList> {
                 },
                 separatorBuilder: (BuildContext context, int index) {
                   return const SizedBox(
-                    height: 0,
+                    height: 4,
                   );
                 },
               ),
