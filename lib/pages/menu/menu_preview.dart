@@ -6,6 +6,7 @@ import 'package:cook_random/components/cart_sheet.dart';
 import 'package:cook_random/model/Ingredient.dart';
 import 'package:cook_random/model/Menu.dart';
 import 'package:cook_random/pages/menu/menu_detail.dart';
+import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 
 class MenuPreview extends StatefulWidget {
@@ -237,7 +238,11 @@ class _MenuPreviewState extends State<MenuPreview> {
                     ),
                   ),
                   Visibility(
-                      visible: true, child: StepList(steps: _item.steps ?? [])),
+                      visible: true,
+                      child: StepList(
+                        steps: _item.steps ?? [],
+                        theme: theme,
+                      )),
                   Visibility(
                     visible: _item.remark != '',
                     child: Container(
@@ -352,9 +357,10 @@ class IngredientsList extends StatelessWidget {
 }
 
 class StepList extends StatelessWidget {
-  const StepList({required this.steps, super.key});
+  const StepList({required this.steps, required this.theme, super.key});
 
   final List<String> steps;
+  final ColorScheme theme;
 
   @override
   Widget build(BuildContext context) {
@@ -364,12 +370,26 @@ class StepList extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '步骤${i + 1}',
-              style: const TextStyle(
-                fontSize: 14,
-                height: 1.43,
-              ),
+            Row(
+              children: [
+                Text(
+                  '步骤${i + 1}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    height: 1.43,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  flex: 1,
+                  child: DottedLine(
+                    dashColor: theme.primary,
+                    dashLength: 2,
+                    dashGapLength: 3,
+                    dashRadius: 1,
+                  ),
+                )
+              ],
             ),
             Text(steps[i],
                 style: const TextStyle(
@@ -425,7 +445,15 @@ class MaterialList extends StatelessWidget {
         ),
       ));
       if (i != list.length - 1) {
-        children.add(const Divider(height: 16));
+        children.add(Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: DottedLine(
+            dashColor: theme.primary,
+            dashLength: 2,
+            dashGapLength: 3,
+            dashRadius: 1,
+          ),
+        ));
       }
     }
     return Card(
